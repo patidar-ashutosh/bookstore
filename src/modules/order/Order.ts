@@ -1,35 +1,32 @@
 import { Book } from "../books/Book";
+import { CartItems } from "../cart/CartItems";
 import { Customer } from "../customer/Customer";
 
 export class Order {
-    public book : Book;
-    public customer : Customer;
-    public bookQuantity:number;
-    public totalPrice:number;
-    public orderType:string = "";
 
-    constructor(selectedBook:Book, currentCustomer:Customer, bookQuantity:number, orderType:string) {
-        this.book = selectedBook;
-        this.customer = currentCustomer;
-        this.bookQuantity = bookQuantity;
-        this.orderType = orderType;
-        this.totalPrice = this.calculateTotal();
+    public allProducts : CartItems[];
+
+    constructor() {
+        this.allProducts = [];
     }
 
-    calculateTotal() : number {
-        return this.book.getPrice() * this.bookQuantity;
+    placeTheCartToOrder(currentCartItem: CartItems) {
+        this.allProducts.push(currentCartItem);
     }
 
-    printOrderDetails() {
-        console.log("| title of book -> " + this.book.title);
-        console.log("| author of book -> " + this.book.author);
-        console.log("| price of book -> " + this.book.price);
-        console.log("| category of book -> " + this.book.category);
-        console.log("| publisher of book -> " + this.book.publisher);
-        console.log("| quantity of book -> " + this.bookQuantity);
-        console.log("| total price of book -> " + this.totalPrice);
-        console.log("| order type of book -> " + this.orderType);
+    printOrderDetails(currentOrder:CartItems[]) {
+        currentOrder.forEach((currentProduct) => {
+            console.log("| title of book -> " + currentProduct.book.title);
+            console.log("| author of book -> " + currentProduct.book.author);
+            console.log("| price of book -> " + currentProduct.book.price);
+            console.log("| category of book -> " + currentProduct.book.category);
+            console.log("| publisher of book -> " + currentProduct.book.publisher);
+            console.log("| quantity of book -> " + currentProduct.bookQuantity);
+            console.log("| total price of book -> " + currentProduct.totalPrice);
+            console.log("| order type of book -> " + currentProduct.orderType);
+    
+            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        })
 
-        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
     }
 }

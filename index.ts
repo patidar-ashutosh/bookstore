@@ -50,22 +50,22 @@ customer1.cart.addToCart(3,6, customer1);
 
 customer1.placeOrder();
 
-customer1.getOrderHistory();
-customer1.cart.getAllCartItems();
+// customer1.getOrderHistory();
+// customer1.cart.getAllCartItems();
 
-const customer2 = new Customer("c2", "c2@gmail.com", "123", 123, "aa");
+// const customer2 = new Customer("c2", "c2@gmail.com", "123", 123, "aa");
 
-customer2.cart.addToCart(4,9, customer2);
-customer2.cart.addToCart(5,1, customer2);
+// customer2.cart.addToCart(4,9, customer2);
+// customer2.cart.addToCart(5,1, customer2);
 
-customer2.cart.getAllCartItems();
+// customer2.cart.getAllCartItems();
 
-customer2.placeOrder();
+// customer2.placeOrder();
 
-customer2.getOrderHistory();
-customer2.cart.getAllCartItems();
+// customer2.getOrderHistory();
+// customer2.cart.getAllCartItems();
 
-admin.analyzeSales();
+// admin.analyzeSales();
 
 // User.allUsers.forEach((currentOne) => {
 //     console.log(currentOne);
