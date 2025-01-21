@@ -2,10 +2,9 @@ import { Admin } from "./modules/admin/Admin";
 import { Customer } from "./modules/customer/Customer";
 
 export class User {
-
     public static allUsers : (Admin | Customer)[] = [];
 
-    constructor(public name:string, public email:string, public password:string) {
+    constructor(readonly name:string, readonly email:string, readonly password:string) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -21,7 +20,7 @@ export class User {
         }
     }
 
-    logout() {
+    logout() : void {
         console.log("Logout successfully :)");
     }
 }

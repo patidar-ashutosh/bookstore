@@ -4,56 +4,56 @@ import { Sales } from "../admin/Sales";
 import { User } from "../../User";
 import { paymentTypes } from '../enums/enumPaymentTypes';
 import { Payments } from "../order/Payment";
-import { quantityValidation } from "../../validation/quantityValidation";
 import { Cart } from "../cart/Cart";
 import { deliveryOptions } from "../enums/deliveryOptions";
 import { CartItems } from "../cart/CartItems";
 
 export class Customer extends User {
 
-    public allOrders : CartItems[];
+    public allOrders : Order[];
 
-    constructor(name:string, email:string, password:string, public phoneNumber:number, public address:string) {
+    constructor(name:string, email:string, password:string, readonly phoneNumber:number, readonly address:string) {
         super(name, email, password);
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.allOrders = [[]];
+        this.allOrders = [];
         User.allUsers.push(this);
     }
 
-    public cart = new Cart();
-    public orders : Order = new Order();
+    public cart : Cart = new Cart();
 
-    placeOrder() {
-        if(this.cart.allcartItems.length === 0) {
+    placeOrder() : void {
+        if(this.cart.allCartItems.length === 0) {
             console.log("------------ you have no item in cart yet :) ------------\n");
             return;
         }
 
-        let orderType = deliveryOptions.DIGITAL;
-
-        const paymentObject = new Payments(paymentTypes.COD);
-        const isPaymentDone = paymentObject.paymentNow();
+        let orderType : deliveryOptions = deliveryOptions.DIGITAL;
+        let paymentType : paymentTypes = paymentTypes.COD;
+        
+        const paymentObject : Payments = new Payments(paymentType);
+        const isPaymentDone : boolean = paymentObject.paymentNow();
+        
         if(isPaymentDone) {
-            this.cart.allcartItems.forEach((currentIteam) => {
-                currentIteam.orderType = orderType;
+            let totalPriceOfOrder : number = 0;
+            const allProducts : CartItems[] = [];
 
-                this.orders.placeTheCartToOrder(currentIteam);
-
+            this.cart.allCartItems.forEach((currentIteam) => {
+                totalPriceOfOrder = totalPriceOfOrder + currentIteam.totalPrice;
+                allProducts.push(currentIteam);
                 // update the quantity of books
                 currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
             })
 
-            this.allOrders.push(this.orders.allProducts);
+            // create new order
+            const orders : Order = new Order(allProducts, totalPriceOfOrder, orderType, paymentType);
+            this.allOrders.push(orders);
 
-
-            const newSales = new Sales(this.allOrders, this);
-            console.log(Sales.allOrdersData);
-            newSales.analyzeSales();
-            // newSales.storeOrder(this.orders.allProducts);
+            const newSales : Sales = new Sales();
+            newSales.storeOrder(this);
 
             // remove iteam from cart
-            this.cart.allcartItems = [];
+            this.cart.allCartItems = [];
             
             console.log("~~~~~~~~~~ order place successfully :) ~~~~~~~~~~");
         } else {
@@ -61,56 +61,50 @@ export class Customer extends User {
         }
     }
 
-    // purchaseBook(indexOfBook:number, quantity:number) {
-    //     const bookData = BookInventory.books;
-    //     const customerSelectBook = bookData[indexOfBook];
+    buyNow(indexOfBook:number, quantity:number) : void {
+        let isItemAddedInCart : boolean = this.cart.addToCart(indexOfBook, quantity);
+        if(isItemAddedInCart) {
+            this.placeOrder();
+        }
+    }
 
-    //     const orderType = deliveryOptions.PHYSICAL;
+    showOrderHistory() : void {
+        // Helper function to create a horizontal line
+        const createLine = (width: number, char: string = "-"): string => {
+            return char.repeat(width);
+        };
+    
+        // Helper function to center-align text within a box
+        const centerText = (text: string, width: number): string => {
+            const space = Math.max(0, width - text.length);
+            const padStart = Math.floor(space / 2);
+            const padEnd = space - padStart;
+            return " ".repeat(padStart) + text + " ".repeat(padEnd);
+        };
+    
+        const boxWidth : number = 60; // Width of the box
         
-    //     let isQuantityAvailable = quantityValidation(customerSelectBook, quantity);
-
-    //     if(!isQuantityAvailable) {
-    //         return;
-    //     }
-
-    //     const paymentObject = new Payments(paymentTypes.COD);
-    //     const isPaymentDone = paymentObject.paymentNow();
-    //     if(isPaymentDone) {
-    //         const orderRequest = new Order(customerSelectBook, this, quantity, orderType);
-    //         this.confirmOrders.push(orderRequest);
-
-    //         const newSales = new Sales();
-    //         newSales.storeOrder(orderRequest);
-            
-    //         // update the quantity of books
-    //         customerSelectBook.setQuantity(customerSelectBook.getQuantity() - quantity);
-            
-    //         console.log("~~~~~~~~~~ order place successfully :) ~~~~~~~~~~");
-    //         orderRequest.printOrderDetails();
-
-    //     } else {
-    //         console.log("order not place because payment failed :)");
-    //     }
-    // }
-
-    getOrderHistory() {
-        console.log("----------------- get order history -----------------\n");
+        console.log(createLine(boxWidth, "="));
+        console.log(centerText("Order History", boxWidth));
         
-        if(this.allOrders[0].length === 1) {
+        if(this.allOrders.length === 0) {
             console.log("------------ you have no orders yet :) ------------\n");
+            console.log(createLine(boxWidth, "="));
+            console.log("\n");
             return;
         }
 
         this.allOrders.forEach((currentOrder, index) => {
-            if(index !== 0){
-                console.log("~~~~~~~~~~ Order Number " + (index) + " ~~~~~~~~~~");
-                console.log("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            console.log(createLine(boxWidth, "-"));
 
-                this.orders.printOrderDetails(currentOrder);
-            }
+            console.log(`| Order #${index + 1}`.padEnd(boxWidth - 1) + "|");
+
+            console.log(createLine(boxWidth, "-"));
+
+            // print one by one order details
+            currentOrder.printOrderDetails(currentOrder);
         })
 
-        // console.log(this.orders?.allOrders.length);
-        // console.log(this.orders?.allOrders[0].allOrders);
+        console.log(createLine(boxWidth, "="));
     }
 }

@@ -1,5 +1,5 @@
 export class Book {
-    constructor (public bookId:string, public title:string, public author:string, public price:number, public quantity:number, public category:string, public publisher:string) {
+    constructor (private bookId:string, private title:string, private author:string, private price:number, private quantity:number, private category:string, private publisher:string) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -45,8 +45,7 @@ export class Book {
         return this.publisher;
     }
 
-    printBookDetails(index:number) : void {
-        console.log("-------------- Book Number : " + (index+1) + "--------------");
+    printBookDetails() : void {
         console.log("title of book -> " + this.getTitle());
         console.log("author of book -> " + this.getAuthor());
         console.log("price of book -> " + this.getPrice());
@@ -54,5 +53,16 @@ export class Book {
         console.log("category of book -> " + this.getCategory());
         console.log("publisher of book -> " + this.getPublisher());
         console.log("\n");
+    }
+
+    editBook(title:string, author:string, price:number, quantity:number, category:string, publisher:string) : void {
+        this.title = (title === "") ? this.title : title;
+        this.author = (author === "") ? this.author : author;
+        this.price = (price === 0) ? this.price : price;
+        this.quantity = (quantity === 0) ? this.quantity : quantity;
+        this.category = (category === "") ? this.category : category;
+        this.publisher = (publisher === "") ? this.publisher : publisher;
+        console.log("-------------- print modify book details --------------\n");
+        this.printBookDetails();
     }
 }

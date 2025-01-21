@@ -4,29 +4,15 @@ export class BookInventory {
 
     public static books : Book[] = [];
 
-    addBook(bookId:string, title:string, author:string, price:number, quantity:number, category:string, publisher:string){
-        const newBook = new Book(bookId, title, author, price, quantity, category, publisher);
+    addBook(newBook:Book) : void {
         BookInventory.books.push(newBook);
     }
 
-    editBook(index:number, title:string, author:string, price:number, quantity:number, category:string, publisher:string){
-        let bookData = BookInventory.books[index];
-        bookData.title = (title === "") ? bookData.title : title;
-        bookData.author = (author === "") ? bookData.author : author;
-        bookData.price = (price === 0) ? bookData.price : price;
-        bookData.quantity = (quantity === 0) ? bookData.quantity : quantity;
-        bookData.category = (category === "") ? bookData.category : category;
-        bookData.publisher = (publisher === "") ? bookData.publisher : publisher;
-
-        console.log("-------------- print modify book details --------------\n");
-        bookData.printBookDetails(index);
-    }
-
-    removeBook(bookId: string){
-        let isBookNotFound = true;
+    removeBook(book: Book) : void {
+        let isBookNotFound : boolean = true;
 
         BookInventory.books.forEach((currentBook, index) => {
-            if(currentBook.getBookId() === bookId) {
+            if(currentBook.getBookId() === book.getBookId()) {
                 isBookNotFound = false;
                 BookInventory.books.splice(index, 1);
                 console.log("-------------- Book remove successfully :) --------------\n");
@@ -38,28 +24,29 @@ export class BookInventory {
         }
     }
 
-    getAllBooks(){
+    showAllBooks() : void {
         console.log("----------------- print all book details -----------------\n");
 
         BookInventory.books.forEach((currentBook, index) => {
-            currentBook.printBookDetails(index);
+            console.log("-------------- Book Number : " + (index+1) + "--------------");
+            currentBook.printBookDetails();
         })
     }
 
-    searchBook(searchValue:string){
-        let isBookNotPresent = false;
+    searchBook(searchValue:string) : void {
+        let isBookNotPresent : boolean = false;
 
         console.log("-------------- Search Result : --------------\n");
 
-        BookInventory.books.forEach((currentBook, index) => {
+        BookInventory.books.forEach((currentBook) => {
             // Regular expression to match the whole word
-            const isTitlePresent = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getTitle().toLowerCase());
-            const isAuthorPresent = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getAuthor().toLowerCase());
-            const isCategoryPresent = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getCategory().toLowerCase());
-            const isPublisherPresent = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getPublisher().toLowerCase());
+            const isTitlePresent : boolean = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getTitle().toLowerCase());
+            const isAuthorPresent : boolean = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getAuthor().toLowerCase());
+            const isCategoryPresent : boolean = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getCategory().toLowerCase());
+            const isPublisherPresent : boolean = new RegExp(`\\b${searchValue.toLowerCase()}\\b`).test(currentBook.getPublisher().toLowerCase());
 
             if(isTitlePresent || isAuthorPresent || isCategoryPresent || isPublisherPresent) {
-                currentBook.printBookDetails(index);
+                currentBook.printBookDetails();
                 isBookNotPresent = true;
             }
         })
