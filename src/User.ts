@@ -2,7 +2,7 @@ import { Admin } from "./modules/admin/Admin";
 import { Customer } from "./modules/customer/Customer";
 
 export class User {
-    public static allUsers : (Admin | Customer)[] = [];
+    public static users : (Admin | Customer)[] = [];
 
     constructor(readonly name:string, readonly email:string, readonly password:string) {
         this.name = name;

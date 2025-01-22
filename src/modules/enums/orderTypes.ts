@@ -1,4 +1,4 @@
-export enum deliveryOptions {
+export enum orderTypes {
     PHYSICAL = "physical",
     DIGITAL = "digital",
 }

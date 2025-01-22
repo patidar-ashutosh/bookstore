@@ -1,17 +1,39 @@
 import { v4 as uuidv4 } from 'uuid';
+import { orderTypes } from '../enums/orderTypes';
+import { paymentTypes } from '../enums/enumPaymentTypes';
 
-export class Payments {
+export class Payment {
+    public status : boolean = false;
+    public id : string = "";
+    public type : paymentTypes = paymentTypes.COD;
 
-    public status : boolean;
-    public paymentId : string = uuidv4();
+    makePayment(orderType:string) : boolean {
+        
+        if(orderType === orderTypes.DIGITAL) {
+            this.type = paymentTypes.Online;
+            console.log("------------ you need to pay amount using online :) ------------\n");
+            this.payWithOnline();
+        } else if(orderType === orderTypes.PHYSICAL) {
 
-    constructor(public paymentType : string) {
-        this.status = false;
-        this.paymentType = paymentType;
+            this.type = paymentTypes.Online;
+
+            if(this.type.includes(paymentTypes.COD)) {
+                console.log("------------ you need to pay amount when you receive the order :) ------------\n");
+                this.status = true;
+            } else if(this.type.includes(paymentTypes.Online)) {
+                console.log("------------ you need to pay amount using online :) ------------\n");
+                this.payWithOnline();
+            }
+        }
+
+        return this.status;
     }
 
-    paymentNow() : boolean{
+    private payWithOnline() : void {
+        console.log("------------ your upi is -> example@ybl ------------\n");
         this.status = true;
-        return this.status;
+        this.id = uuidv4();
+        console.log("------------ Payment done :) ------------\n");
+        console.log(`------------ Payment Id : ${this.id} ------------\n`);
     }
 }

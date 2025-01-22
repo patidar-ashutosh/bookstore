@@ -1,6 +1,6 @@
 import { Book } from "../books/Book";
 
-export class CartItems {
+export class CartItem {
     public book : Book;
     public bookQuantity:number;
     public totalPrice:number;

@@ -24,7 +24,7 @@ export class BookInventory {
         }
     }
 
-    showAllBooks() : void {
+    showBooks() : void {
         console.log("----------------- print all book details -----------------\n");
 
         BookInventory.books.forEach((currentBook, index) => {

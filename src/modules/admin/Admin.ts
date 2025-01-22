@@ -5,16 +5,16 @@ export class Admin extends User {
 
     constructor(name:string, email:string, password:string) {
         super(name, email, password);
-        User.allUsers.push(this);
+        User.users.push(this);
     }
     
     private sales : Sales = new Sales();
 
-    public showAllCustomerData = () => {
-        this.sales.showAllCustomerData();
+    public showCustomersData = () : void => {
+        this.sales.showCustomersData();
     }
 
-    public showCustomerOrderHistoryDetails = () => {
-        this.sales.showCustomerOrderHistoryDetails(Sales.allCustomers[0]);
+    public showCustomerOrderHistoryDetails = () : void => {
+        this.sales.showCustomerOrderHistoryDetails(Sales.customers[0]);
     }
 }

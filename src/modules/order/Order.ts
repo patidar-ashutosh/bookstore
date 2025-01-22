@@ -1,21 +1,19 @@
-import { Book } from "../books/Book";
-import { Cart } from "../cart/Cart";
-import { CartItems } from "../cart/CartItems";
+import { CartItem } from "../cart/CartItem";
 import { Address } from "../customer/Address";
-import { Customer } from "../customer/Customer";
+import { orderTypes } from "../enums/orderTypes";
 
 export class Order {
-    public allProducts : CartItems[];
-    public paymentType : string = "";
+    public products : CartItem[];
+    public type : string = "";
     public totalPriceOfOrder : number;
     public orderType : string;
-    public shippingAddress : Address
+    public shippingAddress? : Address
 
-    constructor(allProducts: CartItems[], totalPriceOfOrder:number, orderType:string, paymentType:string, shippingAddress:Address) {
-        this.allProducts = allProducts;
+    constructor(products: CartItem[], totalPriceOfOrder:number, orderType:string, type:string, shippingAddress?:Address) {
+        this.products = products;
         this.totalPriceOfOrder = totalPriceOfOrder;
         this.orderType = orderType;
-        this.paymentType = paymentType;
+        this.type = type;
         this.shippingAddress = shippingAddress;
     }
 
@@ -27,7 +25,7 @@ export class Order {
     
         const boxWidth : number = 60; // Width of the box
 
-        currentOrder.allProducts.forEach((currentProduct) => {
+        currentOrder.products.forEach((currentProduct) => {
             console.log(`| Title       : ${currentProduct.book.getTitle().padEnd(boxWidth - 17)}|`);
             console.log(`| Author      : ${currentProduct.book.getAuthor().padEnd(boxWidth - 17)}|`);
             console.log(`| Price       : ${currentProduct.book.getPrice().toString().padEnd(boxWidth - 17)}|`);
@@ -39,9 +37,11 @@ export class Order {
         })
         
         console.log(`| Order Type     : ${currentOrder.orderType.padEnd(boxWidth - 20)}|`);
-        console.log(`| Payment Method : ${currentOrder.paymentType.padEnd(boxWidth - 20)}|`);
-        console.log(`| Shipping Address : `);
-        console.log(currentOrder.shippingAddress.address)
+        console.log(`| Payment Method : ${currentOrder.type.padEnd(boxWidth - 20)}|`);
+        if(currentOrder.orderType === orderTypes.PHYSICAL) {
+            console.log(`| Shipping Address : `);
+            console.log(currentOrder.shippingAddress?.address)
+        }
         console.log(createLine(boxWidth, "-"));
     }
 }
