@@ -1,6 +1,7 @@
 import { Book } from "../books/Book";
 import { Cart } from "../cart/Cart";
 import { CartItems } from "../cart/CartItems";
+import { Address } from "../customer/Address";
 import { Customer } from "../customer/Customer";
 
 export class Order {
@@ -8,12 +9,14 @@ export class Order {
     public paymentType : string = "";
     public totalPriceOfOrder : number;
     public orderType : string;
+    public shippingAddress : Address
 
-    constructor(allProducts: CartItems[], totalPriceOfOrder:number, orderType:string, paymentType:string) {
+    constructor(allProducts: CartItems[], totalPriceOfOrder:number, orderType:string, paymentType:string, shippingAddress:Address) {
         this.allProducts = allProducts;
         this.totalPriceOfOrder = totalPriceOfOrder;
         this.orderType = orderType;
         this.paymentType = paymentType;
+        this.shippingAddress = shippingAddress;
     }
 
     printOrderDetails(currentOrder:Order) : void {
@@ -37,6 +40,8 @@ export class Order {
         
         console.log(`| Order Type     : ${currentOrder.orderType.padEnd(boxWidth - 20)}|`);
         console.log(`| Payment Method : ${currentOrder.paymentType.padEnd(boxWidth - 20)}|`);
+        console.log(`| Shipping Address : `);
+        console.log(currentOrder.shippingAddress.address)
         console.log(createLine(boxWidth, "-"));
     }
 }

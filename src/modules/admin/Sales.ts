@@ -56,7 +56,7 @@ export class Sales {
             console.log(`| Name         : ${currentCustomer.name.padEnd(boxWidth - 18)}|`);
             console.log(`| Email        : ${currentCustomer.email.padEnd(boxWidth - 18)}|`);
             console.log(`| Phone        : ${currentCustomer.phoneNumber.toString().padEnd(boxWidth - 18)}|`);
-            console.log(`| Address      : ${currentCustomer.address.padEnd(boxWidth - 18)}|`);
+            // console.log(`| Address      : ${currentCustomer.address.padEnd(boxWidth - 18)}|`);
             console.log(`| Total Orders : ${currentCustomer.allOrders.length.toString().padEnd(boxWidth - 18)}|`);
             console.log(createLine(boxWidth, "-"));
         })
@@ -81,7 +81,7 @@ export class Sales {
         console.log(`| Name         : ${customer.name.padEnd(boxWidth - 18)}|`);
         console.log(`| Email        : ${customer.email.padEnd(boxWidth - 18)}|`);
         console.log(`| Phone        : ${customer.phoneNumber.toString().padEnd(boxWidth - 18)}|`);
-        console.log(`| Address      : ${customer.address.padEnd(boxWidth - 18)}|`);
+        // console.log(`| Address      : ${customer.address.padEnd(boxWidth - 18)}|`);
         console.log(`| Total Orders : ${(customer.allOrders.length).toString().padEnd(boxWidth - 18)}|`);
         console.log(createLine(boxWidth, "="));
     

@@ -7,16 +7,19 @@ import { Payments } from "../order/Payment";
 import { Cart } from "../cart/Cart";
 import { deliveryOptions } from "../enums/deliveryOptions";
 import { CartItems } from "../cart/CartItems";
+import { typeOfAddress } from "../enums/typeOfAddress";
+import { Address } from "./Address";
 
 export class Customer extends User {
 
     public allOrders : Order[];
+    public addresses : Address[];
 
-    constructor(name:string, email:string, password:string, readonly phoneNumber:number, readonly address:string) {
+    constructor(name:string, email:string, password:string, readonly phoneNumber:number) {
         super(name, email, password);
         this.phoneNumber = phoneNumber;
-        this.address = address;
         this.allOrders = [];
+        this.addresses = [];
         User.allUsers.push(this);
     }
 
@@ -28,6 +31,8 @@ export class Customer extends User {
             return;
         }
 
+        let shippingAddress : Address = this.selectAddress();
+        
         let orderType : deliveryOptions = deliveryOptions.DIGITAL;
         let paymentType : paymentTypes = paymentTypes.COD;
         
@@ -46,7 +51,7 @@ export class Customer extends User {
             })
 
             // create new order
-            const orders : Order = new Order(allProducts, totalPriceOfOrder, orderType, paymentType);
+            const orders : Order = new Order(allProducts, totalPriceOfOrder, orderType, paymentType, shippingAddress);
             this.allOrders.push(orders);
 
             const newSales : Sales = new Sales();
@@ -106,5 +111,41 @@ export class Customer extends User {
         })
 
         console.log(createLine(boxWidth, "="));
+    }
+
+    addAddress(newAddress: Address) : void {
+        this.addresses.push(newAddress);
+    }
+
+    showAddresses() : void {
+        this.addresses.forEach((currentAddress) => {
+            console.log(currentAddress.address);
+        })
+    }
+
+    selectAddress() : Address {
+        // select address
+        console.log("~~~~~~~~~~ Select your shipping address :) ~~~~~~~~~~");
+        
+        let shippingAddress : Address;
+
+        this.showAddresses();
+
+        console.log("add new address ??");
+
+        let isCustomerAddNewAddress : boolean = false;
+        console.log(isCustomerAddNewAddress);
+
+        if(isCustomerAddNewAddress) {
+            this.addAddress(new Address("3", "3", 3, "3", "3", typeOfAddress.HOME));
+            shippingAddress = this.addresses[this.addresses.length-1];
+        } else {
+            // means customer select address from already added addresses
+            shippingAddress = this.addresses[0];
+        }
+
+        console.log("~~~~~~~~~~ Address selected successfully :) ~~~~~~~~~~\n");
+
+        return shippingAddress;
     }
 }

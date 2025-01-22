@@ -5,6 +5,8 @@ import { User } from './src/User';
 import { Sales } from './src/modules/admin/Sales';
 import { Book } from './src/modules/books/Book';
 import { BookInventory } from './src/modules/books/BookInventory';
+import { Address } from './src/modules/customer/Address';
+import { typeOfAddress } from './src/modules/enums/typeOfAddress';
 
 const admin = new Admin("rock", "admin@gmail.com", "admin");
 admin.login("admin@gmail.com", "admin");
@@ -38,16 +40,15 @@ BookInventoryObject.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Huma
 
 // admin.analyzeSales();
 
-let customer1 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123, "aa");
+let customer1 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
 // let result = customer1.login("c1@gmail.com", "123");
+
+customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
+customer1.addAddress(new Address("2", "2", 2, "2", "2", typeOfAddress.HOME));
 
 customer1.buyNow(1, 2);
 
-// customer1.cart.addToCart(1,1);
-// customer1.cart.addToCart(2,3);
-// customer1.cart.addToCart(3,6);
 
-// customer1.cart.showAllCartItems();
 
 // customer1.cart.removeItemFromCart(customer1.cart.allCartItems[1]);
 // customer1.cart.removeItemFromCart(4);
@@ -59,7 +60,6 @@ customer1.buyNow(1, 2);
 // customer1.showOrderHistory();
 // customer1.cart.showAllCartItems();
 
-// customer1.placeOrder();
 
 // customer1.showOrderHistory();
 
@@ -67,39 +67,23 @@ customer1.buyNow(1, 2);
 // customer1.cart.addToCart(3,1, customer1);
 
 // customer1.placeOrder();
+
+// customer1.showOrderHistory();
+
+customer1.cart.addToCart(1,1);
+customer1.cart.addToCart(2,3);
+customer1.cart.addToCart(3,6);
+
+// customer1.cart.showAllCartItems();
+
+customer1.placeOrder();
 
 // customer1.showOrderHistory();
 
 // customer1.cart.showAllCartItems();
 
-// const customer2 = new Customer("c2", "c2@gmail.com", "123", 123, "aa");
-
-// customer2.buyNow(1, 2);
-// customer2.buyNow(1, 2);
-
-// customer2.cart.addToCart(4,9, customer2);
-// customer2.cart.addToCart(5,1, customer2);
-
-// customer2.cart.showAllCartItems();
-
-// customer2.placeOrder();
-
-// customer2.cart.addToCart(3,1, customer2);
-// customer2.cart.addToCart(3,1, customer2);
-
-// customer2.placeOrder();
-
-// customer2.showOrderHistory();
-// customer2.cart.showAllCartItems();
-
-// Sales.analyzeSales();
-
-// Sales.showCustomerOrderHistoryDetails(Sales.allCustomers[0]);
-
-// User.allUsers.forEach((currentOne) => {
-//     console.log(currentOne);
-// })
-
 // admin.test();
 admin.showAllCustomerData();
 admin.showCustomerOrderHistoryDetails();
+
+// customer1.showAddresses();
