@@ -1,19 +1,18 @@
+import { designTheOutput } from "../../utilities/designTheOutput";
 import { typeOfAddress } from "../enums/typeOfAddress";
 
 export class Address {
+    constructor(readonly houseNoAndBulindingName:string, readonly area:string, readonly pinCode:number, readonly city:string, readonly state:string, readonly typeOfAddress:typeOfAddress) {}
 
-    public address : {};
+    printDetails() : void {
+        let {createLine, centerText} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
 
-    constructor(houseNoAndBulindingName:string, area:string, pinCode:number, city:string, state:string, typeOfAddress:typeOfAddress) {
-        this.address = {
-            houseNoAndBulindingName,
-            area,
-            pinCode,
-            city,
-            state,
-            typeOfAddress
-        };
+        console.log(`| House Number & Bulinding      : ${this.houseNoAndBulindingName}`);
+        console.log(`| Area                          : ${this.area}`);
+        console.log(`| Pin code                      : ${this.pinCode.toString()}`);
+        console.log(`| City                          : ${this.city}`);
+        console.log(`| State                         : ${this.state}`);
+        console.log(`| Type of address               : ${this.typeOfAddress}`);
     }
-
-
 }

@@ -10,11 +10,11 @@ export class Admin extends User {
     
     private sales : Sales = new Sales();
 
-    public showCustomersData = () : void => {
-        this.sales.showCustomersData();
+    public showCustomersInfo = () : void => {
+        this.sales.showCustomersInfo();
     }
 
-    public showCustomerOrderHistoryDetails = () : void => {
-        this.sales.showCustomerOrderHistoryDetails(Sales.customers[0]);
+    public showCustomerOrderHistory = () : void => {
+        this.sales.showCustomerOrderHistory(Sales.customers[0]);
     }
 }

@@ -5,10 +5,10 @@ export class Sales {
 
     static customers : Customer[] = [];
 
-    private isCustomerPresent(customer:Customer) : boolean {
+    private isCustomerPresent(newCustomer:Customer) : boolean {
         let isCustomerAlreadyPresent : boolean = false;
-        Sales.customers.forEach((currentCustomer) => {
-            if(currentCustomer.email === customer.email) {
+        Sales.customers.forEach((customer) => {
+            if(newCustomer.email === customer.email) {
                 isCustomerAlreadyPresent = true;
             }
         })
@@ -16,13 +16,13 @@ export class Sales {
         return isCustomerAlreadyPresent;
     }
 
-    storeOrder(customer:Customer) : void {
-        if(!this.isCustomerPresent(customer)) {
-            Sales.customers.push(customer);
+    storeOrder(newCustomer:Customer) : void {
+        if(!this.isCustomerPresent(newCustomer)) {
+            Sales.customers.push(newCustomer);
         }
     }
 
-    showCustomersData() : void {
+    showCustomersInfo() : void {
         if(Sales.customers.length === 0) {
             console.log("----------------- no record found -----------------\n");
             return;
@@ -34,21 +34,20 @@ export class Sales {
         console.log(createLine(boxWidth, "="));
         console.log(centerText("Customer Details", boxWidth));
 
-        Sales.customers.forEach((currentCustomer, index) => {
+        Sales.customers.forEach((customer, index) => {
             console.log(`Customer #${index + 1}`);
             console.log(createLine(boxWidth, "-"));
-            console.log(`| Name         : ${currentCustomer.name.padEnd(boxWidth - 18)}|`);
-            console.log(`| Email        : ${currentCustomer.email.padEnd(boxWidth - 18)}|`);
-            console.log(`| Phone        : ${currentCustomer.phoneNumber.toString().padEnd(boxWidth - 18)}|`);
-            // console.log(`| Address      : ${currentCustomer.address.padEnd(boxWidth - 18)}|`);
-            console.log(`| Total Orders : ${currentCustomer.orders.length.toString().padEnd(boxWidth - 18)}|`);
+            console.log(`| Name         : ${customer.name.padEnd(boxWidth - 18)}|`);
+            console.log(`| Email        : ${customer.email.padEnd(boxWidth - 18)}|`);
+            console.log(`| Phone        : ${customer.phoneNumber.toString().padEnd(boxWidth - 18)}|`);
+            console.log(`| Total Orders : ${customer.orders.length.toString().padEnd(boxWidth - 18)}|`);
             console.log(createLine(boxWidth, "-"));
         })
 
         console.log(createLine(boxWidth, "="));
     }
 
-    showCustomerOrderHistoryDetails(customer: Customer) : void {
+    showCustomerOrderHistory(customer: Customer) : void {
         if(Sales.customers.length === 0) {
             console.log("----------------- customer have no orders -----------------\n");
             return;
@@ -65,7 +64,6 @@ export class Sales {
         console.log(`| Name         : ${customer.name.padEnd(boxWidth - 18)}|`);
         console.log(`| Email        : ${customer.email.padEnd(boxWidth - 18)}|`);
         console.log(`| Phone        : ${customer.phoneNumber.toString().padEnd(boxWidth - 18)}|`);
-        // console.log(`| Address      : ${customer.address.padEnd(boxWidth - 18)}|`);
         console.log(`| Total Orders : ${(customer.orders.length).toString().padEnd(boxWidth - 18)}|`);
         console.log(createLine(boxWidth, "="));
     

@@ -1,4 +1,5 @@
-import { quantityValidation } from "../../validation/quantityValidation";
+import { designTheOutput } from "../../utilities/designTheOutput";
+import { validateQuantity } from "../../validation/validateQuantity";
 import { Book } from "../books/Book";
 import { BookInventory } from "../books/BookInventory";
 import { CartItem } from "./CartItem";
@@ -10,14 +11,14 @@ export class Cart {
         const books : Book[] = BookInventory.books;
         const customerSelectedBook : Book = books[indexOfBook];
         
-        let isQuantityAvailable : boolean = quantityValidation(customerSelectedBook, quantity);
+        let isQuantityAvailable : boolean = validateQuantity(customerSelectedBook, quantity);
 
         if(!isQuantityAvailable) {
             return false;
         }
 
         this.items.push(new CartItem(customerSelectedBook, quantity));
-        console.log("~~~~~~~~~~ iteam added in cart successfully :) ~~~~~~~~~~\n");
+        console.log("~~~~~~~~~~ iteam added in cart successfully :) ~~~~~~~~~~");
         return true;
     }
 
@@ -28,13 +29,13 @@ export class Cart {
             if(currentItem.book.getBookId() === cartItem.book.getBookId()) {
                 isItemPresent = true;
                 this.items.splice(index, 1);
-                console.log("-------------- Item remove successfully from cart :) --------------\n");
+                console.log("--------- Iteam remove successfully from cart :) ---------");
                 return;
             }
         })
 
         if(!isItemPresent) {
-            console.log("-------------- item not present in cart!!! --------------\n");
+            console.log("------------- Iteam not present in cart!!! -------------");
         }
     }
 
@@ -44,22 +45,32 @@ export class Cart {
             return;
         }
 
-        console.log("----------------- all cart items -----------------\n");
-        
+        let {createLine, centerText} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
+
+        console.log(createLine(boxWidth, "="));
+        console.log(centerText("Cart Items", boxWidth));
+
         this.items.forEach((currentItem, index) => {
-            console.log("~~~~~~~~~~ Cart Item " + (index+1) + " ~~~~~~~~~~");
+            console.log(centerText(`Item #${index + 1}`, boxWidth));
             this.printItemDetails(currentItem);
         })
+
+        console.log(createLine(boxWidth, "="));
     }
 
     printItemDetails(currentItem : CartItem) : void {
-        console.log("| title of book -> " + currentItem.book.getTitle());
-        console.log("| author of book -> " + currentItem.book.getAuthor());
-        console.log("| price of book -> " + currentItem.book.getPrice());
-        console.log("| category of book -> " + currentItem.book.getCategory());
-        console.log("| publisher of book -> " + currentItem.book.getPublisher());
-        console.log("| quantity of book -> " + currentItem.bookQuantity);
-        console.log("| total price of this cart -> " + currentItem.totalPrice);
-        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        let {createLine} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
+
+        console.log(createLine(boxWidth, "-"));
+        console.log(`| Title       : ${currentItem.book.getTitle().padEnd(boxWidth - 17)}|`);
+        console.log(`| Author      : ${currentItem.book.getAuthor().padEnd(boxWidth - 17)}|`);
+        console.log(`| Price       : ${currentItem.book.getPrice().toString().padEnd(boxWidth - 17)}|`);
+        console.log(`| Category    : ${currentItem.book.getCategory().padEnd(boxWidth - 17)}|`);
+        console.log(`| Publisher   : ${currentItem.book.getPublisher().padEnd(boxWidth - 17)}|`);
+        console.log(`| Quantity    : ${currentItem.bookQuantity.toString().padEnd(boxWidth - 17)}|`);
+        console.log(`| Total price : ${currentItem.totalPrice.toString().padEnd(boxWidth - 17)}|`);
+        console.log(createLine(boxWidth, "-"));
     }
 }

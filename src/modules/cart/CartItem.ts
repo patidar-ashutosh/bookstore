@@ -2,8 +2,8 @@ import { Book } from "../books/Book";
 
 export class CartItem {
     public book : Book;
-    public bookQuantity:number;
-    public totalPrice:number;
+    public bookQuantity : number;
+    public totalPrice : number;
 
     constructor(selectedBook:Book, bookQuantity:number) {
         this.book = selectedBook;

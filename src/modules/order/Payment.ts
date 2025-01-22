@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { orderTypes } from '../enums/orderTypes';
 import { paymentTypes } from '../enums/enumPaymentTypes';
+import { designTheOutput } from '../../utilities/designTheOutput';
 
 export class Payment {
     public status : boolean = false;
@@ -16,7 +17,7 @@ export class Payment {
         } else if(orderType === orderTypes.PHYSICAL) {
 
             this.type = paymentTypes.Online;
-
+            
             if(this.type.includes(paymentTypes.COD)) {
                 console.log("------------ you need to pay amount when you receive the order :) ------------\n");
                 this.status = true;
@@ -30,10 +31,20 @@ export class Payment {
     }
 
     private payWithOnline() : void {
-        console.log("------------ your upi is -> example@ybl ------------\n");
+        let {createLine, centerText} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
+        console.log(createLine(boxWidth, "="));
+
+        console.log(centerText("Payment Statement", boxWidth));
+        console.log(createLine(boxWidth, "-"));
+        console.log(`| your upi is -> example@ybl`.padEnd(boxWidth - 1) + "|");
+
         this.status = true;
+        console.log(`| Payment status : ${this.status === true ? "Done" : "Failed"}`.padEnd(boxWidth - 1) + "|");
+    
         this.id = uuidv4();
-        console.log("------------ Payment done :) ------------\n");
-        console.log(`------------ Payment Id : ${this.id} ------------\n`);
+        console.log(`| Payment id : ${this.id}`.padEnd(boxWidth - 1) + "|");
+
+        console.log(createLine(boxWidth, "="));
     }
 }

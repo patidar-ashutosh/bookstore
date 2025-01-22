@@ -1,3 +1,4 @@
+import { designTheOutput } from "../../utilities/designTheOutput";
 import { Book } from "./Book";
 
 export class BookInventory {
@@ -25,18 +26,24 @@ export class BookInventory {
     }
 
     showBooks() : void {
-        console.log("----------------- print all book details -----------------\n");
+        let {createLine, centerText} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
+
+        console.log(createLine(boxWidth, "="));
+        console.log(centerText("Book Details", boxWidth));
 
         BookInventory.books.forEach((currentBook, index) => {
-            console.log("-------------- Book Number : " + (index+1) + "--------------");
+            console.log(centerText(`Book #${index + 1}`, boxWidth));
             currentBook.printBookDetails();
         })
+
+        console.log(createLine(boxWidth, "="));
     }
 
     searchBook(searchValue:string) : void {
         let isBookNotPresent : boolean = false;
 
-        console.log("-------------- Search Result : --------------\n");
+        console.log("---------------------- Search Results ----------------------");
 
         BookInventory.books.forEach((currentBook) => {
             // Regular expression to match the whole word

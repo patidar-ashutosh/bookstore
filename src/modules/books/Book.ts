@@ -1,13 +1,7 @@
+import { designTheOutput } from "../../utilities/designTheOutput";
+
 export class Book {
-    constructor (private bookId:string, private title:string, private author:string, private price:number, private quantity:number, private category:string, private publisher:string) {
-        this.bookId = bookId;
-        this.title = title;
-        this.author = author;
-        this.price = price;
-        this.quantity = quantity;
-        this.category = category;
-        this.publisher = publisher;
-    }
+    constructor (private bookId:string, private title:string, private author:string, private price:number, private quantity:number, private category:string, private publisher:string) {}
 
     getBookId() : string {
         return this.bookId;
@@ -29,7 +23,7 @@ export class Book {
         return this.quantity;
     }
 
-    setQuantity(quantity: number): void {
+    setQuantity(quantity: number) : void {
         if (quantity < 0 || this.quantity < quantity) {
             console.log("Quantity cannot be negative.");
             return;
@@ -46,13 +40,17 @@ export class Book {
     }
 
     printBookDetails() : void {
-        console.log("title of book -> " + this.getTitle());
-        console.log("author of book -> " + this.getAuthor());
-        console.log("price of book -> " + this.getPrice());
-        console.log("quantity of book -> " + this.getQuantity());
-        console.log("category of book -> " + this.getCategory());
-        console.log("publisher of book -> " + this.getPublisher());
-        console.log("\n");
+        let {createLine} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
+
+        console.log(createLine(boxWidth, "-"));
+        console.log(`| Title     : ${this.getTitle().padEnd(boxWidth - 15)} |`);
+        console.log(`| Author    : ${this.getAuthor().padEnd(boxWidth - 15)} |`);
+        console.log(`| Price     : ${this.getPrice().toString().padEnd(boxWidth - 15)} |`);
+        console.log(`| Quantity  : ${this.getQuantity().toString().padEnd(boxWidth - 15)} |`);
+        console.log(`| Category  : ${this.getCategory().padEnd(boxWidth - 15)} |`);
+        console.log(`| Publisher : ${this.getPublisher().padEnd(boxWidth - 15)} |`);
+        console.log(createLine(boxWidth, "-"));
     }
 
     editBook(title:string, author:string, price:number, quantity:number, category:string, publisher:string) : void {
@@ -62,7 +60,7 @@ export class Book {
         this.quantity = (quantity === 0) ? this.quantity : quantity;
         this.category = (category === "") ? this.category : category;
         this.publisher = (publisher === "") ? this.publisher : publisher;
-        console.log("-------------- print modify book details --------------\n");
+        console.log("-------------------- Modify Book Detail --------------------");
         this.printBookDetails();
     }
 }

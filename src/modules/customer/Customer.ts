@@ -10,7 +10,6 @@ import { CartItem } from "../cart/CartItem";
 import { designTheOutput } from "../../utilities/designTheOutput";
 
 export class Customer extends User {
-
     public orders : Order[];
     public addresses : Address[];
 
@@ -41,25 +40,7 @@ export class Customer extends User {
         let isPaymentDone : boolean = paymentObject.makePayment(orderType);
         
         if(isPaymentDone) {
-            let totalPriceOfOrder : number = 0;
-            const products : CartItem[] = [];
-
-            this.cart.items.forEach((currentIteam) => {
-                totalPriceOfOrder = totalPriceOfOrder + currentIteam.totalPrice;
-                products.push(currentIteam);
-                // update the quantity of books
-                currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
-            })
-
-            // create new order
-            let order : Order;
-            if(orderType === orderTypes.DIGITAL) {
-                order = new Order(products, totalPriceOfOrder, orderType, paymentObject.type);
-            } else {
-                order = new Order(products, totalPriceOfOrder, orderType, paymentObject.type, shippingAddress);
-            }
-
-            this.orders.push(order);
+            this.generateOrder(orderType, paymentObject.type, shippingAddress);
 
             const newSales : Sales = new Sales();
             newSales.storeOrder(this);
@@ -67,10 +48,32 @@ export class Customer extends User {
             // remove iteam from cart
             this.cart.items = [];
             
-            console.log("~~~~~~~~~~ order place successfully :) ~~~~~~~~~~");
+            console.log("\n ~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
         } else {
             console.log("order not place because payment failed :)");
         }
+    }
+
+    private generateOrder(orderType: orderTypes, paymemtType:string, shippingAddress:Address| undefined) : void {
+        let totalPriceOfOrder : number = 0;
+        const products : CartItem[] = [];
+
+        this.cart.items.forEach((currentIteam) => {
+            totalPriceOfOrder = totalPriceOfOrder + currentIteam.totalPrice;
+            products.push(currentIteam);
+            // update the quantity of books
+            currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
+        })
+
+        // create new order
+        let order : Order;
+        if(orderType === orderTypes.DIGITAL) {
+            order = new Order(products, totalPriceOfOrder, orderType, paymemtType);
+        } else {
+            order = new Order(products, totalPriceOfOrder, orderType, paymemtType, shippingAddress);
+        }
+
+        this.orders.push(order);
     }
 
     buyNow(indexOfBook:number, quantity:number,orderType: orderTypes) : void {
@@ -81,7 +84,6 @@ export class Customer extends User {
     }
 
     showOrderHistory() : void {
-        
         let {createLine, centerText} = designTheOutput();
         const boxWidth : number = 60; // Width of the box
         
@@ -96,12 +98,13 @@ export class Customer extends User {
         }
 
         this.orders.forEach((currentOrder, index) => {
+            console.log('\n');
             console.log(createLine(boxWidth, "-"));
             console.log(`| Order #${index + 1}`.padEnd(boxWidth - 1) + "|");
             console.log(createLine(boxWidth, "-"));
 
             // print one by one order details
-            currentOrder.printOrderDetails(currentOrder);
+            currentOrder.printDetails();
         })
 
         console.log(createLine(boxWidth, "="));
@@ -112,26 +115,39 @@ export class Customer extends User {
     }
 
     showAddresses() : void {
-        this.addresses.forEach((currentAddress) => {
-            console.log(currentAddress.address);
+        let {createLine, centerText} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
+        
+        console.log(createLine(boxWidth, "-"));
+        console.log(centerText("All Address", boxWidth));
+        console.log(createLine(boxWidth, "-"));
+
+        this.addresses.forEach((currentAddress, index) => {
+            console.log(centerText(`Address #${index + 1}`, boxWidth));
+            currentAddress.printDetails();
         })
     }
 
     selectAddress() : Address {
         // select address
-        console.log("~~~~~~~~~~ Select your shipping address :) ~~~~~~~~~~");
+        let {createLine, centerText} = designTheOutput();
+        const boxWidth : number = 60; // Width of the box
+        
+        console.log("\n");
+        console.log(createLine(boxWidth, "="));
+        console.log(centerText(`~~~~~ Select your shipping address :) ~~~~~`, boxWidth));
         
         let shippingAddress : Address;
         let isCustomerAddNewAddress : boolean = true;
 
         if(this.addresses.length !== 0) {
             this.showAddresses();
-            console.log("add new address ??");
+            console.log(centerText(`~~~~~ You want to add new address ??? ~~~~~`, boxWidth));
             isCustomerAddNewAddress = true;
         }
 
         if(isCustomerAddNewAddress) {
-            console.log("~~~~~~~~~~ Add new address :) ~~~~~~~~~~\n");
+            console.log(centerText(`~~~~~ Enter details of new address ~~~~~`, boxWidth));
             this.addAddress(new Address("3", "3", 3, "3", "3", typeOfAddress.HOME));
             shippingAddress = this.addresses[this.addresses.length-1];
         } else {
@@ -139,7 +155,12 @@ export class Customer extends User {
             shippingAddress = this.addresses[0];
         }
 
-        console.log("~~~~~~~~~~ Address selected successfully :) ~~~~~~~~~~\n");
+        console.log(createLine(boxWidth, "-"));
+        console.log(centerText(`Address selected successfully :)`, boxWidth));
+        console.log(createLine(boxWidth, "-"));
+
+        console.log(createLine(boxWidth, "="));
+        console.log("\n");
 
         return shippingAddress;
     }
