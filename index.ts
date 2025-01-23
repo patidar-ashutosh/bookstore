@@ -7,7 +7,10 @@ import { Address } from './src/modules/customer/Address';
 import { typeOfAddress } from './src/modules/enums/typeOfAddress';
 import { orderTypes } from './src/modules/enums/orderTypes';
 
+const allUsers = [];
+
 const admin = new Admin("rock", "admin@gmail.com", "admin");
+allUsers.push(admin);
 admin.login("admin@gmail.com", "admin");
 
 const firstBookId = uuidv4();
@@ -34,6 +37,7 @@ BookInventoryObject.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Huma
 // BookInventoryObject.searchBook("Fiction");
 
 let customer1 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
+allUsers.push(customer1);
 
 // customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
 // customer1.showAddresses();
