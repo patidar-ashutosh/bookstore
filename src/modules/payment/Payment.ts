@@ -6,13 +6,12 @@ import { layoutDesign } from '../../service/layoutDesign';
 export class Payment {
     public status : boolean = false;
     public id : string = "";
-    public paymemtType : paymentTypes = paymentTypes.COD;
+
     public paymentMethod : string = "";
 
     makePayment(paymemtType:string) : boolean {
         
         if(paymemtType === paymentTypes.COD) {
-            this.paymemtType = paymentTypes.COD;
             this.paymentMethod = "Cash On Delivery";
             console.log("------------ you need to pay amount when you receive the order :) ------------\n");
             this.status = true;

@@ -24,10 +24,6 @@ export class Book {
     }
 
     setQuantity(quantity: number) : void {
-        if (quantity < 0 || this.quantity < quantity) {
-            console.log("Quantity cannot be negative.");
-            return;
-        }
         this.quantity = quantity;
     }
 

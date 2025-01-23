@@ -25,24 +25,14 @@ export class Customer extends User {
 
     public cart : Cart = new Cart();
 
-    private generateOrder(paymemtType:string, shippingAddress:Address, paymentMethod:string) : void {
-        let totalPriceOfOrder : number = 0;
-        const products : CartItem[] = [];
-
-        this.cart.items.forEach((currentIteam) => {
-            totalPriceOfOrder = totalPriceOfOrder + currentIteam.totalPrice;
-            products.push(currentIteam);
-            // update the quantity of books
-            currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
-        })
-
-        const order = new PhysicalOrder(products, totalPriceOfOrder, paymemtType, shippingAddress, paymentMethod);
-        this.orders.push(order);
-    }
-
     placeOrderWithPhyically() : void {
         if(this.cart.items.length === 0) {
             console.log("------------ you have no item in cart yet :) ------------\n");
+            return;
+        }
+
+        // check that the quantity is avaliable for all cart items
+        if(!this.isQuantityAvaliableForCartItems()) {
             return;
         }
 
@@ -68,7 +58,35 @@ export class Customer extends User {
         this.cart.items = [];
         
         console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
+    }
 
+    private isQuantityAvaliableForCartItems() : boolean {
+        let isQuantityAvailable : boolean = true;
+        this.cart.items.forEach((currentIteam) => {
+            // check that the quantity is avaliable
+            if(currentIteam.bookQuantity > currentIteam.book.getQuantity()) {
+                console.log(`For the book ( ${currentIteam.book.getTitle()} ) we have only ${currentIteam.book.getQuantity()} Quantity ...`);
+                isQuantityAvailable = false;
+                return;
+            }
+        })
+
+        return isQuantityAvailable;
+    }
+
+    private generateOrder(paymemtType:string, shippingAddress:Address, paymentMethod:string) : void {
+        let totalPriceOfOrder : number = 0;
+        const products : CartItem[] = [];
+
+        this.cart.items.forEach((currentIteam) => {
+            totalPriceOfOrder = totalPriceOfOrder + currentIteam.totalPrice;
+            products.push(currentIteam);
+            // update the quantity of books
+            currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
+        })
+
+        const order = new PhysicalOrder(products, totalPriceOfOrder, paymemtType, shippingAddress, paymentMethod);
+        this.orders.push(order);
     }
 
     placeOrderWithDigital(indexOfBook:number) : void {
