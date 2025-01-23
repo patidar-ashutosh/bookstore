@@ -8,9 +8,13 @@ import { typeOfAddress } from "../enums/typeOfAddress";
 import { Address } from "./Address";
 import { CartItem } from "../cart/CartItem";
 import { designTheOutput } from "../../utilities/designTheOutput";
+import { BookInventory } from "../books/BookInventory";
+import { Book } from "../books/Book";
+import { DigitalOrder } from "../order/DigitalOrder";
+import { PhysicalOrder } from "../order/PhysicalOrder";
 
 export class Customer extends User {
-    public orders : Order[];
+    public orders : (DigitalOrder | PhysicalOrder)[];
     public addresses : Address[];
 
     constructor(name:string, email:string, password:string, readonly phoneNumber:number) {
@@ -23,34 +27,11 @@ export class Customer extends User {
     public cart : Cart = new Cart();
 
     placeOrder(orderType: orderTypes) : void {
-        if(this.cart.items.length === 0) {
-            console.log("------------ you have no item in cart yet :) ------------\n");
-            return;
-        }
+    
 
-        let shippingAddress : Address | undefined;
-
-        if(orderType === orderTypes.PHYSICAL) {
-            shippingAddress = this.selectAddress();
-        }
-
-        const paymentObject : Payment = new Payment();
-
-        let isPaymentDone : boolean = paymentObject.makePayment(orderType);
         
-        if(isPaymentDone) {
-            this.generateOrder(orderType, paymentObject.type, shippingAddress);
-
-            const newSales : Sales = new Sales();
-            newSales.storeOrder(this);
-
-            // remove iteam from cart
-            this.cart.items = [];
-            
-            console.log("\n ~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
-        } else {
-            console.log("order not place because payment failed :)");
-        }
+        
+        
     }
 
     private generateOrder(orderType: orderTypes, paymemtType:string, shippingAddress:Address| undefined) : void {
@@ -71,6 +52,51 @@ export class Customer extends User {
         } else {
             order = new Order(products, totalPriceOfOrder, orderType, paymemtType, shippingAddress);
         }
+
+        this.orders.push(order);
+    }
+
+    placeOrderWithPhyically() : void {
+        if(this.cart.items.length === 0) {
+            console.log("------------ you have no item in cart yet :) ------------\n");
+            return;
+        }
+
+        let shippingAddress : Address;
+        shippingAddress = this.selectAddress();
+
+        const paymentObject : Payment = new Payment();
+
+        let isPaymentDone : boolean = paymentObject.makePayment();
+
+
+        if(!isPaymentDone) {
+            console.log("order not place because payment failed :)");
+            return;
+        }
+
+        this.generateOrder(paymentObject.type, shippingAddress);
+
+        const newSales : Sales = new Sales();
+        newSales.storeOrder(this);
+
+        // remove iteam from cart
+        this.cart.items = [];
+        
+        console.log("\n ~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
+
+    }
+
+    placeOrderWithDigital(indexOfBook:number) : void {
+        const books : Book[] = BookInventory.books;
+        const customerSelectedBook : Book = books[indexOfBook];
+
+        if(!customerSelectedBook.getIsPhysicalAvailable()) {
+            console.log("selected book is not avaliable in Physicaliy");
+            return;
+        }
+
+        const order = new DigitalOrder(customerSelectedBook, customerSelectedBook.getPrice());
 
         this.orders.push(order);
     }
