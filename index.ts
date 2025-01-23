@@ -25,7 +25,7 @@ BookInventoryObject.addBook(new Book(uuidv4(), "The Alchemist", "Paulo Coelho", 
 BookInventoryObject.addBook(new Book(uuidv4(), "The Da Vinci Code", "Dan Brown", 450, 10, "Thriller", "Doubleday"));
 BookInventoryObject.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Humankind", "Yuval Noah Harari", 699, 10, "Non-Fiction", "Harvill Secker"));
 
-// BookInventoryObject.showBooks();
+BookInventoryObject.showBooks();
 
 // BookInventory.books[1].editBook("a", "", 100, 2, "", "");
 
