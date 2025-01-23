@@ -1,17 +1,16 @@
-import { Order } from "../order/Order";
 import { Sales } from "../admin/Sales";
 import { User } from "../../User";
-import { Payment } from "../order/Payment";
+import { Payment } from "../payment/Payment";
 import { Cart } from "../cart/Cart";
-import { orderTypes } from "../enums/orderTypes";
 import { typeOfAddress } from "../enums/typeOfAddress";
 import { Address } from "./Address";
 import { CartItem } from "../cart/CartItem";
-import { designTheOutput } from "../../utilities/designTheOutput";
+import { layoutDesign } from "../../service/layoutDesign";
 import { BookInventory } from "../books/BookInventory";
 import { Book } from "../books/Book";
 import { DigitalOrder } from "../order/DigitalOrder";
 import { PhysicalOrder } from "../order/PhysicalOrder";
+import { paymentTypes } from "../enums/paymentTypes";
 
 export class Customer extends User {
     public orders : (DigitalOrder | PhysicalOrder)[];
@@ -26,15 +25,7 @@ export class Customer extends User {
 
     public cart : Cart = new Cart();
 
-    placeOrder(orderType: orderTypes) : void {
-    
-
-        
-        
-        
-    }
-
-    private generateOrder(orderType: orderTypes, paymemtType:string, shippingAddress:Address| undefined) : void {
+    private generateOrder(paymemtType:string, shippingAddress:Address, paymentMethod:string) : void {
         let totalPriceOfOrder : number = 0;
         const products : CartItem[] = [];
 
@@ -45,14 +36,7 @@ export class Customer extends User {
             currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
         })
 
-        // create new order
-        let order : Order;
-        if(orderType === orderTypes.DIGITAL) {
-            order = new Order(products, totalPriceOfOrder, orderType, paymemtType);
-        } else {
-            order = new Order(products, totalPriceOfOrder, orderType, paymemtType, shippingAddress);
-        }
-
+        const order = new PhysicalOrder(products, totalPriceOfOrder, paymemtType, shippingAddress, paymentMethod);
         this.orders.push(order);
     }
 
@@ -66,16 +50,16 @@ export class Customer extends User {
         shippingAddress = this.selectAddress();
 
         const paymentObject : Payment = new Payment();
+        let paymemtType = paymentTypes.COD;
 
-        let isPaymentDone : boolean = paymentObject.makePayment();
-
+        let isPaymentDone : boolean = paymentObject.makePayment(paymemtType);
 
         if(!isPaymentDone) {
-            console.log("order not place because payment failed :)");
+            console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
             return;
         }
 
-        this.generateOrder(paymentObject.type, shippingAddress);
+        this.generateOrder(paymemtType, shippingAddress, paymentObject.paymentMethod);
 
         const newSales : Sales = new Sales();
         newSales.storeOrder(this);
@@ -83,7 +67,7 @@ export class Customer extends User {
         // remove iteam from cart
         this.cart.items = [];
         
-        console.log("\n ~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
+        console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
 
     }
 
@@ -91,39 +75,41 @@ export class Customer extends User {
         const books : Book[] = BookInventory.books;
         const customerSelectedBook : Book = books[indexOfBook];
 
-        if(!customerSelectedBook.getIsPhysicalAvailable()) {
-            console.log("selected book is not avaliable in Physicaliy");
+        if(!customerSelectedBook.getisDigitallyAvailable()) {
+            console.log("~~~~~~~~~~ selected book is not avaliable in Digitally ~~~~~~~~~~");
             return;
         }
 
-        const order = new DigitalOrder(customerSelectedBook, customerSelectedBook.getPrice());
+        const paymentObject : Payment = new Payment();
+        let paymemtType = paymentTypes.Online;
 
+        let isPaymentDone : boolean = paymentObject.makePayment(paymemtType);
+
+        if(!isPaymentDone) {
+            console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
+            return;
+        }
+
+        const order = new DigitalOrder([customerSelectedBook], customerSelectedBook.getPrice(), paymentObject.paymentMethod);
+        console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
         this.orders.push(order);
     }
 
-    buyNow(indexOfBook:number, quantity:number,orderType: orderTypes) : void {
-        let isItemAddedInCart : boolean = this.cart.addItem(indexOfBook, quantity);
-        if(isItemAddedInCart) {
-            this.placeOrder(orderType);
-        }
-    }
-
     showOrderHistory() : void {
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
         
         console.log(createLine(boxWidth, "="));
         console.log(centerText("Order History", boxWidth));
         
         if(this.orders.length === 0) {
-            console.log("------------ you have no orders yet :) ------------\n");
+            console.log(centerText("you have no orders yet :)", boxWidth));
             console.log(createLine(boxWidth, "="));
             console.log("\n");
             return;
         }
 
         this.orders.forEach((currentOrder, index) => {
-            console.log('\n');
             console.log(createLine(boxWidth, "-"));
             console.log(`| Order #${index + 1}`.padEnd(boxWidth - 1) + "|");
             console.log(createLine(boxWidth, "-"));
@@ -140,7 +126,7 @@ export class Customer extends User {
     }
 
     showAddresses() : void {
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
         
         console.log(createLine(boxWidth, "-"));
@@ -150,12 +136,13 @@ export class Customer extends User {
         this.addresses.forEach((currentAddress, index) => {
             console.log(centerText(`Address #${index + 1}`, boxWidth));
             currentAddress.printDetails();
+            console.log(createLine(boxWidth, "-"));
         })
     }
 
     selectAddress() : Address {
         // select address
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
         
         console.log("\n");

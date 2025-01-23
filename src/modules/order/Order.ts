@@ -1,43 +1,41 @@
-import { designTheOutput } from "../../utilities/designTheOutput";
+import { layoutDesign } from "../../service/layoutDesign";
 import { Book } from "../books/Book";
 import { CartItem } from "../cart/CartItem";
-import { Address } from "../customer/Address";
-import { orderTypes } from "../enums/orderTypes";
-import { PhysicalOrder } from "./PhysicalOrder";
 
 export class Order {
-    
-    constructor(public products: CartItem[] | Book, public totalPriceOfOrder:number) {}
+
+    constructor(private products: CartItem[] | Book[], private totalPriceOfOrder:number,private orderType:string, private paymentType:string, readonly paymentMethod:string) {}
 
     printDetails() : void {
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
-        if(typeof this.products) {            
-            // this.products.forEach((product) => {
-            //     console.log(`| Title       : ${product.book.getTitle().padEnd(boxWidth - 17)}|`);
-            //     console.log(`| Author      : ${product.book.getAuthor().padEnd(boxWidth - 17)}|`);
-            //     console.log(`| Price       : ${product.book.getPrice().toString().padEnd(boxWidth - 17)}|`);
-            //     console.log(`| Category    : ${product.book.getCategory().padEnd(boxWidth - 17)}|`);
-            //     console.log(`| Publisher   : ${product.book.getPublisher().padEnd(boxWidth - 17)}|`);
-            //     console.log(`| Quantity    : ${product.bookQuantity.toString().padEnd(boxWidth - 17)}|`);
-            //     console.log(`| Total Price : ${product.totalPrice.toString().toString().padEnd(boxWidth - 17)}|`);
-            //     console.log(createLine(boxWidth, "-"));
-            // })
+        this.products.forEach((currentProduct) => {
+            if(currentProduct instanceof CartItem) {
+                console.log(createLine(boxWidth, "-"));
+                this.printBookDetails(currentProduct.book);
+                console.log(`| Quantity    : ${currentProduct.bookQuantity.toString().padEnd(boxWidth - 17)}|`);
+                console.log(createLine(boxWidth, "-"));
+            } else if(currentProduct instanceof Book) {
+                this.printBookDetails(currentProduct);
+            }
+        })
 
-            console.log(typeof this.products);
-        }
- 
-        
-        
-        // console.log(`| Order Type       : ${this.orderType.padEnd(boxWidth - 22)}|`);
-        // console.log(`| Payment Method   : ${this.type.padEnd(boxWidth - 22)}|`);
-        // if(this.orderType === orderTypes.PHYSICAL && this.shippingAddress !== undefined) {
-        //     console.log(createLine(boxWidth, "-"));
-        //     console.log(centerText("Shipping Address", boxWidth));
-        //     this.shippingAddress.printDetails();
-        // }
+        console.log(createLine(boxWidth, "-"));
+        console.log(centerText("Order Details", boxWidth));
+        console.log(`| Total Price    : ${this.totalPriceOfOrder.toString().toString().padEnd(boxWidth - 20)}|`);
+        console.log(`| Order Type     : ${this.orderType.padEnd(boxWidth - 20)}|`);
+        console.log(`| Payment Type   : ${this.paymentType.padEnd(boxWidth - 20)}|`);
+        console.log(`| Payment Method : ${this.paymentMethod.padEnd(boxWidth - 20)}|`);
         console.log(createLine(boxWidth, "-"));
     }
-    
+ 
+    private printBookDetails(book : Book) : void {
+        console.log(`| Title       : ${book.getTitle().padEnd(60 - 17)}|`);
+        console.log(`| Author      : ${book.getAuthor().padEnd(60 - 17)}|`);
+        console.log(`| Price       : ${book.getPrice().toString().padEnd(60 - 17)}|`);
+        console.log(`| Category    : ${book.getCategory().padEnd(60 - 17)}|`);
+        console.log(`| Publisher   : ${book.getPublisher().padEnd(60 - 17)}|`);
+    }
+
 }

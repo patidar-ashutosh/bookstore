@@ -1,7 +1,7 @@
-import { designTheOutput } from "../../utilities/designTheOutput";
+import { layoutDesign } from "../../service/layoutDesign";
 
 export class Book {
-    constructor (private bookId:string, private title:string, private author:string, private price:number, private quantity:number, private category:string, private publisher:string, private isPhysicalAvailable: boolean) {}
+    constructor (private bookId:string, private title:string, private author:string, private price:number, private quantity:number, private category:string, private publisher:string, private isDigitallyAvailable: boolean) {}
 
     getBookId() : string {
         return this.bookId;
@@ -39,16 +39,16 @@ export class Book {
         return this.publisher;
     }
 
-    getIsPhysicalAvailable() : boolean {
-        return this.isPhysicalAvailable;
+    getisDigitallyAvailable() : boolean {
+        return this.isDigitallyAvailable;
     }
 
-    setIsPhysicalAvailable(newStatus:boolean) : void {
-        this.isPhysicalAvailable = newStatus;
+    setisDigitallyAvailable(newStatus:boolean) : void {
+        this.isDigitallyAvailable = newStatus;
     }
 
     printBookDetails() : void {
-        let {createLine} = designTheOutput();
+        let {createLine} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
         console.log(createLine(boxWidth, "-"));
@@ -58,7 +58,7 @@ export class Book {
         console.log(`| Quantity  : ${this.getQuantity().toString().padEnd(boxWidth - 15)} |`);
         console.log(`| Category  : ${this.getCategory().padEnd(boxWidth - 15)} |`);
         console.log(`| Publisher : ${this.getPublisher().padEnd(boxWidth - 15)} |`);
-        console.log(`| Physical Available : ${this.getIsPhysicalAvailable().toString().padEnd(boxWidth - 24)} |`);
+        console.log(`| Digitally Available : ${(this.getisDigitallyAvailable() ? "Yes" : "No").padEnd(boxWidth - 24)} |`);
         console.log(createLine(boxWidth, "-"));
     }
 

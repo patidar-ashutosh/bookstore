@@ -1,4 +1,4 @@
-import { designTheOutput } from "../../utilities/designTheOutput";
+import { layoutDesign } from "../../service/layoutDesign";
 import { Customer } from "../customer/Customer";
 
 export class Sales {
@@ -28,7 +28,7 @@ export class Sales {
             return;
         }
 
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
         console.log(createLine(boxWidth, "="));
@@ -53,7 +53,7 @@ export class Sales {
             return;
         }
     
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
         // Print customer details in a box

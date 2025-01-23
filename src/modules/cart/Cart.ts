@@ -1,4 +1,4 @@
-import { designTheOutput } from "../../utilities/designTheOutput";
+import { layoutDesign } from "../../service/layoutDesign";
 import { validateQuantity } from "../../validation/validateQuantity";
 import { Book } from "../books/Book";
 import { BookInventory } from "../books/BookInventory";
@@ -45,7 +45,7 @@ export class Cart {
             return;
         }
 
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
         console.log(createLine(boxWidth, "="));
@@ -60,7 +60,7 @@ export class Cart {
     }
 
     printItemDetails(currentItem : CartItem) : void {
-        let {createLine} = designTheOutput();
+        let {createLine} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
         console.log(createLine(boxWidth, "-"));

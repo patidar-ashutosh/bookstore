@@ -1,4 +1,4 @@
-import { designTheOutput } from "../../utilities/designTheOutput";
+import { layoutDesign } from "../../service/layoutDesign";
 import { Book } from "./Book";
 
 export class BookInventory {
@@ -26,7 +26,7 @@ export class BookInventory {
     }
 
     showBooks() : void {
-        let {createLine, centerText} = designTheOutput();
+        let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
         console.log(createLine(boxWidth, "="));
