@@ -1,7 +1,7 @@
 import { designTheOutput } from "../../utilities/designTheOutput";
 
 export class Book {
-    constructor (private bookId:string, private title:string, private author:string, private price:number, private quantity:number, private category:string, private publisher:string) {}
+    constructor (private bookId:string, private title:string, private author:string, private price:number, private quantity:number, private category:string, private publisher:string, private isPhysicalAvailable: boolean) {}
 
     getBookId() : string {
         return this.bookId;
@@ -39,6 +39,14 @@ export class Book {
         return this.publisher;
     }
 
+    getIsPhysicalAvailable() : boolean {
+        return this.isPhysicalAvailable;
+    }
+
+    setIsPhysicalAvailable(newStatus:boolean) : void {
+        this.isPhysicalAvailable = newStatus;
+    }
+
     printBookDetails() : void {
         let {createLine} = designTheOutput();
         const boxWidth : number = 60; // Width of the box
@@ -50,6 +58,7 @@ export class Book {
         console.log(`| Quantity  : ${this.getQuantity().toString().padEnd(boxWidth - 15)} |`);
         console.log(`| Category  : ${this.getCategory().padEnd(boxWidth - 15)} |`);
         console.log(`| Publisher : ${this.getPublisher().padEnd(boxWidth - 15)} |`);
+        console.log(`| Physical Available : ${this.getIsPhysicalAvailable().toString().padEnd(boxWidth - 24)} |`);
         console.log(createLine(boxWidth, "-"));
     }
 
