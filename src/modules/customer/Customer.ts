@@ -18,7 +18,6 @@ export class Customer extends User {
         this.phoneNumber = phoneNumber;
         this.orders = [];
         this.addresses = [];
-        User.users.push(this);
     }
 
     public cart : Cart = new Cart();
