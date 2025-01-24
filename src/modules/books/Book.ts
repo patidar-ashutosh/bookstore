@@ -35,11 +35,11 @@ export class Book {
         return this.publisher;
     }
 
-    getisDigitallyAvailable() : boolean {
+    getIsDigitallyAvailable() : boolean {
         return this.isDigitallyAvailable;
     }
 
-    setisDigitallyAvailable(newStatus:boolean) : void {
+    setIsDigitallyAvailable(newStatus:boolean) : void {
         this.isDigitallyAvailable = newStatus;
     }
 
@@ -54,7 +54,7 @@ export class Book {
         console.log(`| Quantity  : ${this.getQuantity().toString().padEnd(boxWidth - 15)} |`);
         console.log(`| Category  : ${this.getCategory().padEnd(boxWidth - 15)} |`);
         console.log(`| Publisher : ${this.getPublisher().padEnd(boxWidth - 15)} |`);
-        console.log(`| Digitally Available : ${(this.getisDigitallyAvailable() ? "Yes" : "No").padEnd(boxWidth - 24)} |`);
+        console.log(`| Digitally Available : ${(this.getIsDigitallyAvailable() ? "Yes" : "No").padEnd(boxWidth - 24)} |`);
         console.log(createLine(boxWidth, "-"));
     }
 

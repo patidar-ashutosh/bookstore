@@ -35,7 +35,7 @@ BookInventoryObject.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Huma
 
 // BookInventoryObject.searchBook("Fiction");
 
-BookInventory.books[3].setisDigitallyAvailable(false);
+BookInventory.books[3].setIsDigitallyAvailable(false);
 // BookInventoryObject.showBooks();
 
 // let customer1 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
@@ -57,8 +57,8 @@ BookInventory.books[3].setisDigitallyAvailable(false);
 // customer1.cart.showItems();
 // customer1.cart.removeItem(customer1.cart.items[2]);
 
-// customer2.placeOrderWithPhyically();
-// customer1.placeOrderWithPhyically();
+// customer2.placeOrderWithPhysically();
+// customer1.placeOrderWithPhysically();
 
 // customer1.showOrderHistory();
 // customer2.showOrderHistory();

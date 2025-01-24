@@ -25,14 +25,14 @@ export class Customer extends User {
 
     public cart : Cart = new Cart();
 
-    placeOrderWithPhyically() : void {
+    placeOrderWithPhysically() : void {
         if(this.cart.items.length === 0) {
             console.log("------------ you have no item in cart yet :) ------------\n");
             return;
         }
 
-        // check that the quantity is avaliable for all cart items
-        if(!this.isQuantityAvaliableForCartItems()) {
+        // check that the quantity is available for all cart items
+        if(!this.isQuantityAvailableForCartItems()) {
             return;
         }
 
@@ -40,16 +40,16 @@ export class Customer extends User {
         shippingAddress = this.selectAddress();
 
         const paymentObject : Payment = new Payment();
-        let paymemtType = paymentTypes.COD;
+        let paymentType = paymentTypes.COD;
 
-        let isPaymentDone : boolean = paymentObject.makePayment(paymemtType);
+        let isPaymentDone : boolean = paymentObject.makePayment(paymentType);
 
         if(!isPaymentDone) {
             console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
             return;
         }
 
-        this.generateOrder(paymemtType, shippingAddress, paymentObject.paymentMethod);
+        this.generateOrder(paymentType, shippingAddress, paymentObject.paymentMethod);
 
         const newSales : Sales = new Sales();
         newSales.storeOrder(this);
@@ -60,12 +60,12 @@ export class Customer extends User {
         console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
     }
 
-    private isQuantityAvaliableForCartItems() : boolean {
+    private isQuantityAvailableForCartItems() : boolean {
         let isQuantityAvailable : boolean = true;
-        this.cart.items.forEach((currentIteam) => {
+        this.cart.items.forEach((currentItem) => {
             // check that the quantity is avaliable
-            if(currentIteam.bookQuantity > currentIteam.book.getQuantity()) {
-                console.log(`For the book ( ${currentIteam.book.getTitle()} ) we have only ${currentIteam.book.getQuantity()} Quantity ...`);
+            if(currentItem.bookQuantity > currentItem.book.getQuantity()) {
+                console.log(`For the book ( ${currentItem.book.getTitle()} ) we have only ${currentItem.book.getQuantity()} Quantity ...`);
                 isQuantityAvailable = false;
                 return;
             }
@@ -74,18 +74,18 @@ export class Customer extends User {
         return isQuantityAvailable;
     }
 
-    private generateOrder(paymemtType:string, shippingAddress:Address, paymentMethod:string) : void {
+    private generateOrder(paymentType:string, shippingAddress:Address, paymentMethod:string) : void {
         let totalPriceOfOrder : number = 0;
         const products : CartItem[] = [];
 
-        this.cart.items.forEach((currentIteam) => {
-            totalPriceOfOrder = totalPriceOfOrder + currentIteam.totalPrice;
-            products.push(currentIteam);
+        this.cart.items.forEach((currentItem) => {
+            totalPriceOfOrder = totalPriceOfOrder + currentItem.totalPrice;
+            products.push(currentItem);
             // update the quantity of books
-            currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
+            currentItem.book.setQuantity(currentItem.book.getQuantity() - currentItem.bookQuantity);
         })
 
-        const order = new PhysicalOrder(products, totalPriceOfOrder, paymemtType, shippingAddress, paymentMethod);
+        const order = new PhysicalOrder(products, totalPriceOfOrder, paymentType, shippingAddress, paymentMethod);
         this.orders.push(order);
     }
 
@@ -93,7 +93,7 @@ export class Customer extends User {
         const books : Book[] = BookInventory.books;
         const customerSelectedBook : Book = books[indexOfBook];
 
-        if(!customerSelectedBook.getisDigitallyAvailable()) {
+        if(!customerSelectedBook.getIsDigitallyAvailable()) {
             console.log("~~~~~~~~~~ selected book is not avaliable in Digitally ~~~~~~~~~~");
             return;
         }
