@@ -16,7 +16,7 @@ export class Payment {
             console.log("------------ you need to pay amount when you receive the order :) ------------\n");
             this.status = true;
             return true;
-        } 
+        }
 
         console.log("------------ you need to pay amount using online :) ------------\n");
         console.log("------------ so please select payment method :) ------------\n");
