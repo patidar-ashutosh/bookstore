@@ -1,8 +1,8 @@
 import { Admin } from './src/modules/admin/Admin';
-import { Customer } from './src/modules/customer/Customer';
 import { v4 as uuidv4 } from 'uuid';
 import { Book } from './src/modules/books/Book';
 import { BookInventory } from './src/modules/books/BookInventory';
+import { Customer } from './src/modules/customer/Customer';
 import { Address } from './src/modules/customer/Address';
 import { typeOfAddress } from './src/modules/enums/typeOfAddress';
 
@@ -38,27 +38,39 @@ BookInventoryObject.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Huma
 BookInventory.books[3].setIsDigitallyAvailable(false);
 // BookInventoryObject.showBooks();
 
-// let customer1 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
-// let customer2 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
+let customer1 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
+let customer2 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
 // allUsers.push(customer1);
 // allUsers.push(customer2);
 
-// customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
+customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
 // customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
 // customer1.showAddresses();
+
+
+
+
+
+
+
+
+
+
+
 
 // customer1.placeOrderWithDigital(3);
 // customer1.placeOrderWithDigital(1);
 // customer1.showOrderHistory();
 
-// customer1.cart.addItem(2, 6);
-// customer2.cart.addItem(2, 5);
+customer1.getCart().addItem(2, 6);
+// customer2.getCart().addItem(2, 5);
 
-// customer1.cart.showItems();
-// customer1.cart.removeItem(customer1.cart.items[2]);
+customer1.placeOrderWithPhysically();
+
+customer1.getCart().showItems();
+customer1.getCart().removeItem(customer1.getCart().getItems()[2]);
 
 // customer2.placeOrderWithPhysically();
-// customer1.placeOrderWithPhysically();
 
 // customer1.showOrderHistory();
 // customer2.showOrderHistory();

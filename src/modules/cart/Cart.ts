@@ -5,9 +5,17 @@ import { BookInventory } from "../books/BookInventory";
 import { CartItem } from "./CartItem";
 
 export class Cart {
-    public items : CartItem[] = [];
+    private items : CartItem[] = [];
 
-    addItem(indexOfBook:number, quantity:number) : boolean {
+    public getItems():CartItem[]{
+        return this.items
+    }
+
+    public empty():void{
+        this.items = [];
+    }
+
+    public addItem(indexOfBook:number, quantity:number) : boolean {
         const books : Book[] = BookInventory.books;
         const customerSelectedBook : Book = books[indexOfBook];
         
@@ -22,11 +30,11 @@ export class Cart {
         return true;
     }
 
-    removeItem(cartItem:CartItem) : void {
+    public removeItem(cartItem:CartItem) : void {
         let isItemPresent : boolean = false;
 
         this.items.forEach((currentItem, index) => {
-            if(currentItem.book.getBookId() === cartItem.book.getBookId()) {
+            if(currentItem.getItem().getBookId() === cartItem.getItem().getBookId()) {
                 isItemPresent = true;
                 this.items.splice(index, 1);
                 console.log("--------- Iteam remove successfully from cart :) ---------");
@@ -39,7 +47,7 @@ export class Cart {
         }
     }
 
-    showItems() : void {
+    public showItems() : void {
         if(this.items.length === 0) {
             console.log("------------ you have no item in cart yet :) ------------\n");
             return;
@@ -59,18 +67,18 @@ export class Cart {
         console.log(createLine(boxWidth, "="));
     }
 
-    printItemDetails(currentItem : CartItem) : void {
+    public printItemDetails(currentItem : CartItem) : void {
         let {createLine} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
         console.log(createLine(boxWidth, "-"));
-        console.log(`| Title       : ${currentItem.book.getTitle().padEnd(boxWidth - 17)}|`);
-        console.log(`| Author      : ${currentItem.book.getAuthor().padEnd(boxWidth - 17)}|`);
-        console.log(`| Price       : ${currentItem.book.getPrice().toString().padEnd(boxWidth - 17)}|`);
-        console.log(`| Category    : ${currentItem.book.getCategory().padEnd(boxWidth - 17)}|`);
-        console.log(`| Publisher   : ${currentItem.book.getPublisher().padEnd(boxWidth - 17)}|`);
-        console.log(`| Quantity    : ${currentItem.bookQuantity.toString().padEnd(boxWidth - 17)}|`);
-        console.log(`| Total price : ${currentItem.totalPrice.toString().padEnd(boxWidth - 17)}|`);
+        console.log(`| Title       : ${currentItem.getItem().getTitle().padEnd(boxWidth - 17)}|`);
+        console.log(`| Author      : ${currentItem.getItem().getAuthor().padEnd(boxWidth - 17)}|`);
+        console.log(`| Price       : ${currentItem.getItem().getPrice().toString().padEnd(boxWidth - 17)}|`);
+        console.log(`| Category    : ${currentItem.getItem().getCategory().padEnd(boxWidth - 17)}|`);
+        console.log(`| Publisher   : ${currentItem.getItem().getPublisher().padEnd(boxWidth - 17)}|`);
+        console.log(`| Quantity    : ${currentItem.getItem().toString().padEnd(boxWidth - 17)}|`);
+        console.log(`| Total price : ${currentItem.getItem().toString().padEnd(boxWidth - 17)}|`);
         console.log(createLine(boxWidth, "-"));
     }
 }

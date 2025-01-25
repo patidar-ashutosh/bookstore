@@ -1,6 +1,6 @@
 import { Sales } from "../admin/Sales";
 import { User } from "../../User";
-import { Payment } from "../payment/Payment";
+import { Payment, PaymentReceiptSchema } from "../payment/Payment";
 import { Cart } from "../cart/Cart";
 import { typeOfAddress } from "../enums/typeOfAddress";
 import { Address } from "./Address";
@@ -10,7 +10,7 @@ import { BookInventory } from "../books/BookInventory";
 import { Book } from "../books/Book";
 import { DigitalOrder } from "../order/DigitalOrder";
 import { PhysicalOrder } from "../order/PhysicalOrder";
-import { paymentTypes } from "../enums/paymentTypes";
+import { CreditCard } from "../payment/PaymentMethods/CreditCard";
 
 export class Customer extends User {
     public orders : (DigitalOrder | PhysicalOrder)[];
@@ -23,49 +23,48 @@ export class Customer extends User {
         this.addresses = [];
     }
 
-    public cart : Cart = new Cart();
+    private cart : Cart = new Cart();
 
-    placeOrderWithPhysically() : void {
-        if(this.cart.items.length === 0) {
+    public getCart():Cart{
+        return this.cart
+    }
+
+    public placeOrderWithPhysically() : void {
+        if(this.getCart().getItems().length === 0) {
             console.log("------------ you have no item in cart yet :) ------------\n");
             return;
         }
 
-        // check that the quantity is available for all cart items
         if(!this.isQuantityAvailableForCartItems()) {
             return;
         }
 
-        let shippingAddress : Address;
-        shippingAddress = this.selectAddress();
+        let shippingAddress : Address = this.selectAddress();
 
-        const paymentObject : Payment = new Payment();
-        let paymentType = paymentTypes.COD;
+        const payment:Payment = new Payment();
 
-        let isPaymentDone : boolean = paymentObject.makePayment(paymentType);
+        let paymentReceipt : PaymentReceiptSchema | string =  payment.verify(new CreditCard( 123456789, "Himanshu", "12/25", 123 ));
 
-        if(!isPaymentDone) {
+        if(typeof(paymentReceipt)== 'string' ){
             console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
-            return;
+                return;    
         }
 
-        this.generateOrder(paymentType, shippingAddress, paymentObject.paymentMethod);
+        this.generateOrder(paymentReceipt,shippingAddress);
 
         const newSales : Sales = new Sales();
         newSales.storeOrder(this);
 
-        // remove iteam from cart
-        this.cart.items = [];
+        this.getCart().empty();
         
         console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
     }
 
     private isQuantityAvailableForCartItems() : boolean {
         let isQuantityAvailable : boolean = true;
-        this.cart.items.forEach((currentItem) => {
-            // check that the quantity is avaliable
-            if(currentItem.bookQuantity > currentItem.book.getQuantity()) {
-                console.log(`For the book ( ${currentItem.book.getTitle()} ) we have only ${currentItem.book.getQuantity()} Quantity ...`);
+        this.getCart().getItems().forEach((currentItem) => {
+            if(currentItem.getItemQuantity() > currentItem.getItem().getQuantity()) {
+                console.log(`For the book ( ${currentItem.getItem().getTitle()} ) we have only ${currentItem.getItem().getQuantity()} Quantity ...`);
                 isQuantityAvailable = false;
                 return;
             }
@@ -74,46 +73,61 @@ export class Customer extends User {
         return isQuantityAvailable;
     }
 
-    private generateOrder(paymentType:string, shippingAddress:Address, paymentMethod:string) : void {
-        let totalPriceOfOrder : number = 0;
-        const products : CartItem[] = [];
+    // private generateOrder(paymentType:string, shippingAddress:Address, paymentMethod:string) : void {
+    //     let totalPriceOfOrder : number = 0;
+    //     const products : CartItem[] = [];
 
-        this.cart.items.forEach((currentItem) => {
-            totalPriceOfOrder = totalPriceOfOrder + currentItem.totalPrice;
-            products.push(currentItem);
-            // update the quantity of books
-            currentItem.book.setQuantity(currentItem.book.getQuantity() - currentItem.bookQuantity);
-        })
+    //     this.cart.items.forEach((currentItem) => {
+    //         totalPriceOfOrder = totalPriceOfOrder + currentItem.totalPrice;
+    //         products.push(currentItem);
+    //         // update the quantity of books
+    //         currentItem.book.setQuantity(currentItem.book.getQuantity() - currentItem.bookQuantity);
+    //     })
 
-        const order = new PhysicalOrder(products, totalPriceOfOrder, paymentType, shippingAddress, paymentMethod);
-        this.orders.push(order);
-    }
+    //     const order = new PhysicalOrder(products, totalPriceOfOrder, paymentType, shippingAddress, paymentMethod);
+    //     this.orders.push(order);
+    // }
 
-    placeOrderWithDigital(indexOfBook:number) : void {
+    private generateOrder(paymentDetail:PaymentReceiptSchema, shippingAddress:Address) : void {
+            let totalPriceOfOrder : number = 0;
+            let products : CartItem[] = [];
+    
+            this.getCart().getItems().forEach((currentItem) => {
+                totalPriceOfOrder += currentItem.getTotalPrice();
+                products.push(currentItem);
+
+                currentItem.getItem().setQuantity(currentItem.getItem().getQuantity() - currentItem.getItemQuantity());
+            })
+    
+            const order = new PhysicalOrder(products, totalPriceOfOrder,paymentDetail, shippingAddress);
+            this.orders.push(order);
+        }
+
+
+    public placeOrderWithDigital(indexOfBook:number) : void {
         const books : Book[] = BookInventory.books;
         const customerSelectedBook : Book = books[indexOfBook];
 
-        if(!customerSelectedBook.getIsDigitallyAvailable()) {
-            console.log("~~~~~~~~~~ selected book is not avaliable in Digitally ~~~~~~~~~~");
+        if(!customerSelectedBook.isDigitallyAvailable()) {
+            console.log("~~~~~~~~~~ Sorry ,but selected book is not available in Digital Format ~~~~~~~~~~");
             return;
         }
 
-        const paymentObject : Payment = new Payment();
-        let paymemtType = paymentTypes.Online;
+        const payment : Payment = new Payment();
 
-        let isPaymentDone : boolean = paymentObject.makePayment(paymemtType);
+        const paymentReceipt:PaymentReceiptSchema | string = payment.verify(new CreditCard( 123456789, "Himanshu", "12/25", 123 ))
 
-        if(!isPaymentDone) {
+        if(typeof(paymentReceipt)=='string') {
             console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
             return;
         }
 
-        const order = new DigitalOrder([customerSelectedBook], customerSelectedBook.getPrice(), paymentObject.paymentMethod);
+        const order:DigitalOrder = new DigitalOrder([customerSelectedBook], customerSelectedBook.getPrice(), paymentReceipt);
         console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
         this.orders.push(order);
     }
 
-    showOrderHistory() : void {
+    public showOrderHistory() : void {
         let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
         
@@ -139,11 +153,11 @@ export class Customer extends User {
         console.log(createLine(boxWidth, "="));
     }
 
-    addAddress(newAddress: Address) : void {
+    public addAddress(newAddress: Address) : void {
         this.addresses.push(newAddress);
     }
 
-    showAddresses() : void {
+    public showAddresses() : void {
         let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
         
@@ -158,8 +172,7 @@ export class Customer extends User {
         })
     }
 
-    selectAddress() : Address {
-        // select address
+    public selectAddress() : Address {
         let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
         
@@ -181,7 +194,6 @@ export class Customer extends User {
             this.addAddress(new Address("3", "3", 3, "3", "3", typeOfAddress.HOME));
             shippingAddress = this.addresses[this.addresses.length-1];
         } else {
-            // means customer select address from already added addresses
             shippingAddress = this.addresses[0];
         }
 

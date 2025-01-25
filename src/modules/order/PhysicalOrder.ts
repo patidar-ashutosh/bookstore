@@ -1,12 +1,13 @@
 import { layoutDesign } from "../../service/layoutDesign";
 import { CartItem } from "../cart/CartItem";
 import { Address } from "../customer/Address";
+import { PaymentReceiptSchema } from "../payment/Payment";
 import { Order } from "./Order";
 
 export class PhysicalOrder extends Order {
 
-    constructor(products: CartItem[], totalPriceOfOrder:number, paymentType:string, public shippingAddress:Address, paymentMethod:string) {
-        super(products, totalPriceOfOrder, "physical", paymentType, paymentMethod);
+    constructor(products: CartItem[], totalPriceOfOrder:number, paymentDetail:PaymentReceiptSchema, public shippingAddress:Address) {
+        super(products, totalPriceOfOrder, paymentDetail);
     }
 
     printDetails() : void {
