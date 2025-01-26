@@ -14,7 +14,7 @@ export class Payment {
         if(basePayment.pay()){
             return this.getReceipt(basePayment);
         }else{
-            return "Payment Failed!";
+            return "payment failed!";
         }
     }
 

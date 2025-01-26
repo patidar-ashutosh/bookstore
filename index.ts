@@ -14,26 +14,26 @@ admin.login("admin@gmail.com", "admin");
 
 const firstBookId = uuidv4();
 
-const BookInventoryObject = new BookInventory();
+const bookInventory = new BookInventory();
 
-BookInventoryObject.addBook(new Book(firstBookId, "The Great Gatsby", "F. Scott Fitzgerald", 399, 10, "Fiction", "Scribner", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "1984", "George Orwell", 499, 10, "Dystopian", "Secker & Warburg", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "To Kill a Mockingbird", "Harper Lee", 349, 10, "Classic", "J.B. Lippincott & Co.", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "The Catcher in the Rye", "J.D. Salinger", 299, 10, "Young Adult", "Little, Brown and Company", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "Pride and Prejudice", "Jane Austen", 249, 10, "Romance", "T. Egerton", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "The Hobbit", "J.R.R. Tolkien", 599, 10, "Fantasy", "George Allen & Unwin", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "Harry Potter and the Sorcerer's Stone", "J.K. Rowling", 799, 10, "Fantasy", "Bloomsbury", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "The Alchemist", "Paulo Coelho", 399, 10, "Philosophy", "HarperOne", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "The Da Vinci Code", "Dan Brown", 450, 10, "Thriller", "Doubleday", true));
-BookInventoryObject.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Humankind", "Yuval Noah Harari", 699, 10, "Non-Fiction", "Harvill Secker", true));
+bookInventory.addBook(new Book(firstBookId, "The Great Gatsby", "F. Scott Fitzgerald", 399, 10, "Fiction", "Scribner", true));
+bookInventory.addBook(new Book(uuidv4(), "1984", "George Orwell", 499, 10, "Dystopian", "Secker & Warburg", true));
+bookInventory.addBook(new Book(uuidv4(), "To Kill a Mockingbird", "Harper Lee", 349, 10, "Classic", "J.B. Lippincott & Co.", true));
+bookInventory.addBook(new Book(uuidv4(), "The Catcher in the Rye", "J.D. Salinger", 299, 10, "Young Adult", "Little, Brown and Company", true));
+bookInventory.addBook(new Book(uuidv4(), "Pride and Prejudice", "Jane Austen", 249, 10, "Romance", "T. Egerton", true));
+bookInventory.addBook(new Book(uuidv4(), "The Hobbit", "J.R.R. Tolkien", 599, 10, "Fantasy", "George Allen & Unwin", true));
+bookInventory.addBook(new Book(uuidv4(), "Harry Potter and the Sorcerer's Stone", "J.K. Rowling", 799, 10, "Fantasy", "Bloomsbury", true));
+bookInventory.addBook(new Book(uuidv4(), "The Alchemist", "Paulo Coelho", 399, 10, "Philosophy", "HarperOne", true));
+bookInventory.addBook(new Book(uuidv4(), "The Da Vinci Code", "Dan Brown", 450, 10, "Thriller", "Doubleday", true));
+bookInventory.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Humankind", "Yuval Noah Harari", 699, 10, "Non-Fiction", "Harvill Secker", true));
 
-// BookInventoryObject.showBooks();
+// bookInventory.showBooks();
 
 // BookInventory.books[1].editBook("a", "", 100, 2, "", "");
 
-// BookInventoryObject.removeBook(BookInventory.books[1]);
+// bookInventory.removeBook(BookInventory.books[1]);
 
-// BookInventoryObject.searchBook("Fiction");
+// bookInventory.searchBook("Fiction");
 
 BookInventory.books[3].setIsDigitallyAvailable(false);
 // BookInventoryObject.showBooks();
@@ -47,35 +47,24 @@ customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
 // customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
 // customer1.showAddresses();
 
-
-
-
-
-
-
-
-
-
-
-
-// customer1.placeOrderWithDigital(3);
-// customer1.placeOrderWithDigital(1);
+// customer1.placeOrderDigitally(3);
+// customer1.placeOrderDigitally(1);
 // customer1.showOrderHistory();
 
 customer1.getCart().addItem(2, 6);
 // customer2.getCart().addItem(2, 5);
 
-customer1.placeOrderWithPhysically();
+customer1.placeOrderPhysically();
 
 customer1.getCart().showItems();
 customer1.getCart().removeItem(customer1.getCart().getItems()[2]);
 
-// customer2.placeOrderWithPhysically();
+// customer2.placeOrderPhysically();
 
 // customer1.showOrderHistory();
 // customer2.showOrderHistory();
 
-// customer1.placeOrderWithDigital(1);
+// customer1.placeOrderDigitally(1);
 
 // admin.showCustomersInfo();
 // admin.showCustomerOrderHistory();

@@ -2,6 +2,7 @@ import { layoutDesign } from "../../service/layoutDesign";
 import { validateQuantity } from "../../validation/validateQuantity";
 import { Book } from "../books/Book";
 import { BookInventory } from "../books/BookInventory";
+import { findItemFromInventory } from "../helper/findItemFromInventory";
 import { CartItem } from "./CartItem";
 
 export class Cart {
@@ -11,13 +12,19 @@ export class Cart {
         return this.items
     }
 
+    public isItemsAvailable():boolean{
+        if(this.getItems().length>0){
+            return true
+        }
+        return false
+    }
+
     public empty():void{
         this.items = [];
     }
 
     public addItem(indexOfBook:number, quantity:number) : boolean {
-        const books : Book[] = BookInventory.books;
-        const customerSelectedBook : Book = books[indexOfBook];
+        const customerSelectedBook : Book = findItemFromInventory(indexOfBook)
         
         let isQuantityAvailable : boolean = validateQuantity(customerSelectedBook, quantity);
 
@@ -26,7 +33,7 @@ export class Cart {
         }
 
         this.items.push(new CartItem(customerSelectedBook, quantity));
-        console.log("~~~~~~~~~~ iteam added in cart successfully :) ~~~~~~~~~~");
+        console.log("~~~~~~~~~~ item added in cart successfully :) ~~~~~~~~~~");
         return true;
     }
 
@@ -37,13 +44,13 @@ export class Cart {
             if(currentItem.getItem().getBookId() === cartItem.getItem().getBookId()) {
                 isItemPresent = true;
                 this.items.splice(index, 1);
-                console.log("--------- Iteam remove successfully from cart :) ---------");
+                console.log("--------- Item remove successfully from cart :) ---------");
                 return;
             }
         })
 
         if(!isItemPresent) {
-            console.log("------------- Iteam not present in cart!!! -------------");
+            console.log("------------- Item not present in cart!!! -------------");
         }
     }
 
