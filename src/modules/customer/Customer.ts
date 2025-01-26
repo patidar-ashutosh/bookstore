@@ -10,7 +10,7 @@ import { PhysicalOrder } from "../order/PhysicalOrder";
 import { CreditCard } from "../payment/PaymentMethods/CreditCard";
 import { isQuantityAvailableForCartItems } from "../helper/isQuantityAvailableForCartItems";
 import { CartItem } from "../cart/CartItem";
-import { getListOfDigitallyNotAvailableBooks } from "../helper/isListOfBooksDigitallyAvailable";
+import { getListOfDigitallyNotAvailableBooks } from "../helper/getListOfDigitallyNotAvailableBooks";
 import { Upi } from "../payment/PaymentMethods/Upi";
 import { Order } from "../order/Order";
 
