@@ -36,35 +36,38 @@ bookInventory.addBook(new Book(uuidv4(), "Sapiens: A Brief History of Humankind"
 // bookInventory.searchBook("Fiction");
 
 BookInventory.books[3].setIsDigitallyAvailable(false);
-// BookInventoryObject.showBooks();
+// bookInventory.showBooks();
 
 let customer1 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
-let customer2 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
-// allUsers.push(customer1);
+// let customer2 : Customer | null = new Customer("c1", "c1@gmail.com", "123", 123);
+
+
+allUsers.push(customer1);
 // allUsers.push(customer2);
 
 customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
 // customer1.addAddress(new Address("1", "1", 1, "1", "1", typeOfAddress.HOME));
 // customer1.showAddresses();
 
-// customer1.placeOrderDigitally(3);
+customer1.getCart().addItem(2, 6);
+customer1.getCart().showItems();
+
+customer1.placeOrderDigitally();
 // customer1.placeOrderDigitally(1);
 // customer1.showOrderHistory();
 
-customer1.getCart().addItem(2, 6);
-// customer2.getCart().addItem(2, 5);
+customer1.getCart().addItem(2, 5);
 
 customer1.placeOrderPhysically();
 
-customer1.getCart().showItems();
-customer1.getCart().removeItem(customer1.getCart().getItems()[2]);
+// customer1.getCart().removeItem(customer1.getCart().getItems()[0]);
 
 // customer2.placeOrderPhysically();
 
-// customer1.showOrderHistory();
+customer1.showOrderHistory();
 // customer2.showOrderHistory();
 
 // customer1.placeOrderDigitally(1);
 
-// admin.showCustomersInfo();
-// admin.showCustomerOrderHistory();
+admin.showCustomersInfo();
+admin.showCustomerOrderHistory();

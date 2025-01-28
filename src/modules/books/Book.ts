@@ -52,6 +52,24 @@ export class Book {
     this._isDigitallyAvailable = newStatus;
   }
 
+  public editBook(
+    title: string,
+    author: string,
+    price: number,
+    quantity: number,
+    category: string,
+    publisher: string
+  ): void {
+    this._title = title === "" ? this._title : title;
+    this._author = author === "" ? this._author : author;
+    this._price = price === 0 ? this._price : price;
+    this._quantity = quantity === 0 ? this._quantity : quantity;
+    this._category = category === "" ? this._category : category;
+    this._publisher = publisher === "" ? this._publisher : publisher;
+    console.log("-------------------- Modify Book Detail --------------------");
+    this.printBookDetails();
+  }
+
   public printBookDetails(): void {
     let { createLine } = layoutDesign.designTheOutput();
     const boxWidth: number = 60; // Width of the box
@@ -80,21 +98,5 @@ export class Book {
     console.log(createLine(boxWidth, "-"));
   }
 
-  public editBook(
-    title: string,
-    author: string,
-    price: number,
-    quantity: number,
-    category: string,
-    publisher: string
-  ): void {
-    this._title = title === "" ? this._title : title;
-    this._author = author === "" ? this._author : author;
-    this._price = price === 0 ? this._price : price;
-    this._quantity = quantity === 0 ? this._quantity : quantity;
-    this._category = category === "" ? this._category : category;
-    this._publisher = publisher === "" ? this._publisher : publisher;
-    console.log("-------------------- Modify Book Detail --------------------");
-    this.printBookDetails();
-  }
+
 }

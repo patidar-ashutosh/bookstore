@@ -1,43 +1,22 @@
 import { layoutDesign } from "../../service/layoutDesign";
 import { Book } from "../books/Book";
-import { Cart } from "../cart/Cart";
 import { CartItem } from "../cart/CartItem";
-import { Address } from "../customer/Address";
-import { Customer } from "../customer/Customer";
 import { PaymentReceiptSchema } from "../payment/Payment";
-import { DigitalOrder } from "./DigitalOrder";
-import { PhysicalOrder } from "./PhysicalOrder";
 
-export abstract class Order {
-    constructor(private products: CartItem[], private totalPriceOfOrder:number,private paymentDetail:PaymentReceiptSchema) {}
+export class Order {
+    
+    constructor(public products: CartItem[], public totalPriceOfOrder:number,public paymentDetail:PaymentReceiptSchema,public orderType : string) {}
 
     public getProducts():CartItem[]{
         return this.products;
     }
-
-    public static createOrder<TypeOfOrder extends DigitalOrder | PhysicalOrder>(customer:Customer,paymentDetail:PaymentReceiptSchema,shippingAddress?:Address):TypeOfOrder{
-
-        let totalPriceOfOrder : number = 0;
-        let products : CartItem[] = [];
-
-        customer.getCart().getItems().forEach((currentItem:CartItem)=>{
-            totalPriceOfOrder += currentItem.getTotalPrice();
-            products.push(currentItem);
-        })
-
-        if(shippingAddress){
-            Order.quantityDecreaser(customer.getCart());
-            return new PhysicalOrder(products,totalPriceOfOrder,paymentDetail,shippingAddress) as TypeOfOrder
-        }
-
-        return new DigitalOrder(products,totalPriceOfOrder,paymentDetail) as TypeOfOrder
-
+   
+    public getTotalPriceOfOrder():number{
+        return this.totalPriceOfOrder;
     }
 
-    private static quantityDecreaser(cart:Cart){
-        cart.getItems().forEach((currentCartItem:CartItem)=>{
-            currentCartItem.getItem().setQuantity(currentCartItem.getItem().getQuantity()-currentCartItem.getItemQuantity());
-        })
+    public getPaymentDetail():PaymentReceiptSchema{
+        return this.paymentDetail;
     }
 
     public printDetails() : void {
@@ -51,13 +30,13 @@ export abstract class Order {
                 console.log(createLine(boxWidth, "-"));
         })
 
-        // console.log(createLine(boxWidth, "-"));
-        // console.log(centerText("Order Details", boxWidth));
-        // console.log(`| Total Price    : ${this.totalPriceOfOrder.toString().toString().padEnd(boxWidth - 20)}|`);
-        // console.log(`| Order Type     : ${this.orderType.padEnd(boxWidth - 20)}|`);
+        console.log(createLine(boxWidth, "-"));
+        console.log(centerText("Order Details", boxWidth));
+        console.log(`| Total Price    : ${this.totalPriceOfOrder.toString().toString().padEnd(boxWidth - 20)}|`);
+        console.log(`| Order Type     : ${this.orderType.padEnd(boxWidth - 20)}|`);
         // console.log(`| Payment Type   : ${this.paymentType.padEnd(boxWidth - 20)}|`);
         // console.log(`| Payment Method : ${this.paymentMethod.padEnd(boxWidth - 20)}|`);
-        // console.log(createLine(boxWidth, "-"));
+        console.log(createLine(boxWidth, "-"));
     }
  
     private printBookDetails(book : Book) : void {

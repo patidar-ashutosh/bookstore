@@ -62,4 +62,8 @@ export class BookInventory {
             console.log("-------------- Book not found (: --------------\n");
         }
     }
+
+    public static findItemFromInventory(index: number): Book {
+        return BookInventory.books[index];
+    }
 }

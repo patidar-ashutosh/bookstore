@@ -5,23 +5,12 @@ import { paymentTypes } from "../enums/paymentTypes";
 import { PaymentReceiptSchema } from "../payment/Payment";
 import { Order } from "./Order";
 
+console.log("hii")
+
 export class DigitalOrder extends Order {
 
-    constructor(products: CartItem[], totalPriceOfOrder:number, paymentDetail:PaymentReceiptSchema) {
-        super(products, totalPriceOfOrder, paymentDetail);
+    constructor( products: CartItem[], totalPriceOfOrder:number,  paymentDetail:PaymentReceiptSchema,orderType : string) {
+        super(products, totalPriceOfOrder, paymentDetail,orderType);
     }
-
-
-    // public static createOrder(customer:Customer,paymentDetail:PaymentReceiptSchema):DigitalOrder{
-
-    //     let totalPriceOfOrder : number = 0;
-    //     let products : CartItem[] = [];
     
-    //     customer.getCart().getItems().forEach((currentItem:CartItem)=>{
-    //         totalPriceOfOrder += currentItem.getTotalPrice();
-    //         products.push(currentItem);
-    //     })
-    
-    //     return new DigitalOrder(products,totalPriceOfOrder,paymentDetail)
-    // }
 }
