@@ -12,9 +12,6 @@ import { isQuantityAvailableForCartItems } from "../cart/isQuantityAvailableForC
 import { CartItem } from "../cart/CartItem";
 import { getListOfDigitallyNotAvailableBooks } from "../books/getListOfDigitallyNotAvailableBooks";
 import { Upi } from "../payment/PaymentMethods/Upi";
-import { Order } from "../order/Order";
-import { createOrder } from "../order/createOrder";
-import { create } from "domain";
 
 export class Customer extends User {
   public orders: (DigitalOrder | PhysicalOrder)[];
@@ -40,9 +37,7 @@ export class Customer extends User {
 
   public placeOrderPhysically(): void {
     if (!this.getCart().isItemsAvailable()) {
-      console.log(
-        "------------ you have no item in cart yet :) ------------\n"
-      );
+      console.log("------------ you have no item in cart yet :) ------------\n");
       return;
     }
 
@@ -54,23 +49,14 @@ export class Customer extends User {
     const payment: Payment = new Payment();
 
     //customer selected to pay with credit card
-    let paymentReceipt: PaymentReceiptSchema | string = payment.verify(
-      new CreditCard(123456789, "Mark", "12/25", 123)
-    );
+    let paymentReceipt: PaymentReceiptSchema | string = payment.verify(new CreditCard(123456789, "Mark", "12/25", 123));
 
     if (typeof paymentReceipt == "string") {
-      console.log(
-        "~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~"
-      );
+      console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
       return;
     }
 
-    const order: PhysicalOrder = this.createOrder<PhysicalOrder>(
-      this,
-      paymentReceipt,
-      "Physical Order",
-      shippingAddress
-    );
+    const order:PhysicalOrder = this.createOrder<PhysicalOrder>(this,paymentReceipt,"Physical Order",shippingAddress);
 
     this.orders.push(order);
 
@@ -85,38 +71,27 @@ export class Customer extends User {
     const digitallyNotAvailableItems: CartItem[] | true =
       getListOfDigitallyNotAvailableBooks(this.cart);
 
-    if (digitallyNotAvailableItems != true) {
-      console.log(
-        `Some items in your cart is currently not available in digital Format: ${digitallyNotAvailableItems}`
-      );
+    if (digitallyNotAvailableItems != true) {    
+        console.log(`Some items in your cart is currently not available in digital Format: ${digitallyNotAvailableItems}`);
       return;
     }
 
     const payment: Payment = new Payment();
-    const paymentReceipt: PaymentReceiptSchema | string = payment.verify(
-      new Upi("example@gmail.com")
-    );
+    const paymentReceipt: PaymentReceiptSchema | string = payment.verify(new Upi("example@gmail.com"));
 
     if (typeof paymentReceipt == "string") {
-      console.log(
-        "~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~"
-      );
+      console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
       return;
     }
 
-    const order: DigitalOrder = this.createOrder<DigitalOrder>(
-      this,
-      paymentReceipt,
-      "Digital Order"
-    );
+    const order: DigitalOrder  = this.createOrder<DigitalOrder>(this,paymentReceipt,"Digital Order");
+
     this.orders.push(order);
     const newSales: Sales = new Sales();
     newSales.storeOrder(this);
     this.getCart().empty();
 
-    console.log(
-      "------------------ Order has been placed successfully! ------------------------"
-    );
+    console.log("------------------ Order has been placed successfully! ------------------------");
   }
 
   public addAddress(newAddress: Address): void {
@@ -186,9 +161,7 @@ export class Customer extends User {
     }
 
     if (isCustomerAddNewAddress) {
-      console.log(
-        centerText(`~~~~~ Enter details of new address ~~~~~`, boxWidth)
-      );
+      console.log(centerText(`~~~~~ Enter details of new address ~~~~~`, boxWidth));
       this.addAddress(new Address("3", "3", 3, "3", "3", typeOfAddress.HOME));
       shippingAddress = this.addresses[this.addresses.length - 1];
     } else {
@@ -210,35 +183,21 @@ export class Customer extends User {
     paymentDetail: PaymentReceiptSchema,
     orderType: string,
     shippingAddress?: Address
-  ): TypeOfOrder {
+  ):TypeOfOrder {
     let totalPriceOfOrder: number = 0;
     let products: CartItem[] = [];
 
-    customer
-      .getCart()
-      .getItems()
-      .forEach((currentItem: CartItem) => {
+    customer.getCart().getItems().forEach((currentItem: CartItem) => {
         totalPriceOfOrder += currentItem.getTotalPrice();
         products.push(currentItem);
       });
 
     if (shippingAddress) {
       this.quantityDecreaser(customer.getCart());
-      return new PhysicalOrder(
-        products,
-        totalPriceOfOrder,
-        paymentDetail,
-        orderType,
-        shippingAddress
-      ) as TypeOfOrder;
+      return new PhysicalOrder(products,totalPriceOfOrder,paymentDetail,orderType,shippingAddress) as TypeOfOrder ;
     }
 
-    return new DigitalOrder(
-      products,
-      totalPriceOfOrder,
-      paymentDetail,
-      orderType
-    ) as TypeOfOrder;
+    return new DigitalOrder(products,totalPriceOfOrder,paymentDetail,orderType) as TypeOfOrder;
   }
   private quantityDecreaser(cart: Cart) {
     cart.getItems().forEach((currentCartItem: CartItem) => {
