@@ -1,16 +1,14 @@
-import { BlobOptions } from "buffer";
-import { layoutDesign } from "../../../service/layoutDesign";
-import { BasePayment } from "./BasePayment";
+import { layoutDesign } from "../../service/layoutDesign";
+import { PaymentStructure } from "./PaymentStructure";
 
-export class CreditCard extends BasePayment {
+
+export class CreditCard implements PaymentStructure {
   constructor(
     private cardNumber: number,
     private cardHolderName: string,
     private expiryDate: string,
     private cvv: number
-  ) {
-    super();
-  }
+  ) {}
 
   private paymentStatus: boolean = false;
 
@@ -23,21 +21,23 @@ export class CreditCard extends BasePayment {
     console.log(createLine(boxWidth, "="));
 
     const exampleCardNumber: number = 123456789; // Example valid card number
-    const exampleCardHolderName: string = "Mark"; 
-    const exampleExpiryDate: string = "12/25"; 
-    const exampleCvv: number = 123; 
+    const exampleCardHolderName: string = "Mark";
+    const exampleExpiryDate: string = "12/25";
+    const exampleCvv: number = 123;
 
     if (
       this.getCardNumber() === exampleCardNumber &&
-      this.getCardHolderName() ===  exampleCardHolderName &&
+      this.getCardHolderName() === exampleCardHolderName &&
       this.getExpiryDate() === exampleExpiryDate &&
       this.getCvv() === exampleCvv
     ) {
       this.paymentStatus = true;
       console.log(centerText("Payment Successful!", boxWidth));
     } else {
-      this.paymentStatus = false; 
-      console.log(centerText("Payment Failed! Invalid card details.", boxWidth));
+      this.paymentStatus = false;
+      console.log(
+        centerText("Payment Failed! Invalid card details.", boxWidth)
+      );
     }
 
     console.log(createLine(boxWidth, "="));

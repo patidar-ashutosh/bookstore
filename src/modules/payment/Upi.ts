@@ -1,9 +1,7 @@
-import { BasePayment } from "./BasePayment";
+import { PaymentStructure } from "./PaymentStructure";
 
-export class Upi extends BasePayment {
-  constructor(private upiId: string) {
-    super();
-  }
+export class Upi implements PaymentStructure {
+  constructor(private upiId: string) {}
 
   public pay(): boolean {
     const exampleUpiId = "example@gmail.com";

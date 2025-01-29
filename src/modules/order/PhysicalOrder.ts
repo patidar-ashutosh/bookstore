@@ -1,15 +1,14 @@
 import { layoutDesign } from "../../service/layoutDesign";
 import { CartItem } from "../cart/CartItem";
 import { Address } from "../customer/Address";
-import { Customer } from "../customer/Customer";
-import { PaymentReceiptSchema } from "../payment/Payment";
+import { PaymentReceipt } from "../payment/PaymentStructure";
 import { Order } from "./Order";
 
 export class PhysicalOrder extends Order {
   constructor(
     public products: CartItem[],
     public totalPriceOfOrder: number,
-    public paymentDetail: PaymentReceiptSchema,
+    public paymentDetail: PaymentReceipt,
     public orderType: string,
     public shippingAddress: Address
   ) {

@@ -23,3 +23,5 @@ export class CartItem {
     return this.getItem().getPrice() * this.getItemQuantity();
   }
 }
+
+
