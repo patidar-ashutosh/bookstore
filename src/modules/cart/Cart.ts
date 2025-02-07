@@ -5,72 +5,131 @@ import { BookInventory } from "../books/BookInventory";
 import { CartItem } from "./CartItem";
 
 export class Cart {
-    public items : CartItem[] = [];
+  private items: CartItem[] = [];
 
-    addItem(indexOfBook:number, quantity:number) : boolean {
-        const books : Book[] = BookInventory.books;
-        const customerSelectedBook : Book = books[indexOfBook];
-        
-        let isQuantityAvailable : boolean = validateQuantity(customerSelectedBook, quantity);
+  public getItems(): CartItem[] {
+    return this.items;
+  }
 
-        if(!isQuantityAvailable) {
-            return false;
-        }
+  public isItemsAvailable(): boolean {
+    if (this.getItems().length > 0) {
+      return true;
+    }
+    return false;
+  }
 
-        this.items.push(new CartItem(customerSelectedBook, quantity));
-        console.log("~~~~~~~~~~ iteam added in cart successfully :) ~~~~~~~~~~");
-        return true;
+  public empty(): void {
+    this.items = [];
+  }
+
+  public addItem(indexOfBook: number, quantity: number): boolean {
+    const customerSelectedBook: Book = BookInventory.findItemFromInventory(indexOfBook);
+
+    let isQuantityAvailable: boolean = validateQuantity(
+      customerSelectedBook,
+      quantity
+    );
+
+    if (!isQuantityAvailable) {
+      return false;
     }
 
-    removeItem(cartItem:CartItem) : void {
-        let isItemPresent : boolean = false;
+    this.items.push(new CartItem(customerSelectedBook, quantity));
+    console.log("~~~~~~~~~~ item added in cart successfully :) ~~~~~~~~~~");
+    return true;
+  }
 
-        this.items.forEach((currentItem, index) => {
-            if(currentItem.book.getBookId() === cartItem.book.getBookId()) {
-                isItemPresent = true;
-                this.items.splice(index, 1);
-                console.log("--------- Iteam remove successfully from cart :) ---------");
-                return;
-            }
-        })
+  public removeItem(cartItem: CartItem): void {
+    let isItemPresent: boolean = false;
 
-        if(!isItemPresent) {
-            console.log("------------- Iteam not present in cart!!! -------------");
-        }
+    this.items.forEach((currentItem, index) => {
+      if (
+        currentItem.getItem().getBookId() === cartItem.getItem().getBookId()
+      ) {
+        isItemPresent = true;
+        this.items.splice(index, 1);
+        console.log(
+          "--------- Item remove successfully from cart :) ---------"
+        );
+        return;
+      }
+    });
+
+    if (!isItemPresent) {
+      console.log("------------- Item not present in cart!!! -------------");
+    }
+  }
+
+  public showItems(): void {
+    if (this.items.length === 0) {
+      console.log(
+        "------------ you have no item in cart yet :) ------------\n"
+      );
+      return;
     }
 
-    showItems() : void {
-        if(this.items.length === 0) {
-            console.log("------------ you have no item in cart yet :) ------------\n");
-            return;
-        }
+    let { createLine, centerText } = layoutDesign.designTheOutput();
+    const boxWidth: number = 60; // Width of the box
 
-        let {createLine, centerText} = layoutDesign.designTheOutput();
-        const boxWidth : number = 60; // Width of the box
+    console.log(createLine(boxWidth, "="));
+    console.log(centerText("Cart Items", boxWidth));
 
-        console.log(createLine(boxWidth, "="));
-        console.log(centerText("Cart Items", boxWidth));
+    this.items.forEach((currentItem, index) => {
+      console.log(centerText(`Item #${index + 1}`, boxWidth));
+      this.printItemDetails(currentItem);
+    });
 
-        this.items.forEach((currentItem, index) => {
-            console.log(centerText(`Item #${index + 1}`, boxWidth));
-            this.printItemDetails(currentItem);
-        })
+    console.log(createLine(boxWidth, "="));
+  }
 
-        console.log(createLine(boxWidth, "="));
-    }
+  public printItemDetails(currentItem: CartItem): void {
+    let { createLine } = layoutDesign.designTheOutput();
+    const boxWidth: number = 60; // Width of the box
 
-    printItemDetails(currentItem : CartItem) : void {
-        let {createLine} = layoutDesign.designTheOutput();
-        const boxWidth : number = 60; // Width of the box
-
-        console.log(createLine(boxWidth, "-"));
-        console.log(`| Title       : ${currentItem.book.getTitle().padEnd(boxWidth - 17)}|`);
-        console.log(`| Author      : ${currentItem.book.getAuthor().padEnd(boxWidth - 17)}|`);
-        console.log(`| Price       : ${currentItem.book.getPrice().toString().padEnd(boxWidth - 17)}|`);
-        console.log(`| Category    : ${currentItem.book.getCategory().padEnd(boxWidth - 17)}|`);
-        console.log(`| Publisher   : ${currentItem.book.getPublisher().padEnd(boxWidth - 17)}|`);
-        console.log(`| Quantity    : ${currentItem.bookQuantity.toString().padEnd(boxWidth - 17)}|`);
-        console.log(`| Total price : ${currentItem.totalPrice.toString().padEnd(boxWidth - 17)}|`);
-        console.log(createLine(boxWidth, "-"));
-    }
+    console.log(createLine(boxWidth, "-"));
+    console.log(
+      `| Title       : ${currentItem
+        .getItem()
+        .getTitle()
+        .padEnd(boxWidth - 17)}|`
+    );
+    console.log(
+      `| Author      : ${currentItem
+        .getItem()
+        .getAuthor()
+        .padEnd(boxWidth - 17)}|`
+    );
+    console.log(
+      `| Price       : ${currentItem
+        .getItem()
+        .getPrice()
+        .toString()
+        .padEnd(boxWidth - 17)}|`
+    );
+    console.log(
+      `| Category    : ${currentItem
+        .getItem()
+        .getCategory()
+        .padEnd(boxWidth - 17)}|`
+    );
+    console.log(
+      `| Publisher   : ${currentItem
+        .getItem()
+        .getPublisher()
+        .padEnd(boxWidth - 17)}|`
+    );
+    console.log(
+      `| Quantity    : ${currentItem
+        .getItem()
+        .getQuantity()
+        .toString()
+        .padEnd(boxWidth - 17)}|`
+    );
+    console.log(
+      `| Total price : ${
+        currentItem.getItem().getPrice() * currentItem.getItem().getQuantity()
+      }`
+    );
+    console.log(createLine(boxWidth, "-"));
+  }
 }

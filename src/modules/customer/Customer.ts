@@ -1,197 +1,230 @@
 import { Sales } from "../admin/Sales";
 import { User } from "../../User";
+import { PaymentReceipt } from "../payment/PaymentStructure";
 import { Payment } from "../payment/Payment";
 import { Cart } from "../cart/Cart";
 import { typeOfAddress } from "../enums/typeOfAddress";
 import { Address } from "./Address";
-import { CartItem } from "../cart/CartItem";
 import { layoutDesign } from "../../service/layoutDesign";
-import { BookInventory } from "../books/BookInventory";
-import { Book } from "../books/Book";
 import { DigitalOrder } from "../order/DigitalOrder";
 import { PhysicalOrder } from "../order/PhysicalOrder";
-import { paymentTypes } from "../enums/paymentTypes";
+import { CreditCard } from "../payment/CreditCard";
+import { isQuantityAvailableForCartItems } from "../cart/isQuantityAvailableForCartItems";
+import { CartItem } from "../cart/CartItem";
+import { getListOfDigitallyNotAvailableBooks } from "../books/getListOfDigitallyNotAvailableBooks";
+import { Upi } from "../payment/Upi";
 
 export class Customer extends User {
-    public orders : (DigitalOrder | PhysicalOrder)[];
-    public addresses : Address[];
+  public orders: (DigitalOrder | PhysicalOrder)[];
+  public addresses: Address[];
 
-    constructor(name:string, email:string, password:string, readonly phoneNumber:number) {
-        super(name, email, password);
-        this.phoneNumber = phoneNumber;
-        this.orders = [];
-        this.addresses = [];
+  constructor(
+    name: string,
+    email: string,
+    password: string,
+    readonly phoneNumber: number
+  ) {
+    super(name, email, password);
+    this.phoneNumber = phoneNumber;
+    this.orders = [];
+    this.addresses = [];
+  }
+
+  private cart: Cart = new Cart();
+
+  public getCart(): Cart {
+    return this.cart;
+  }
+
+  public placeOrderPhysically(): void {
+    if (!this.getCart().isItemsAvailable()) {
+      console.log("------------ you have no item in cart yet :) ------------\n");
+      return;
     }
 
-    public cart : Cart = new Cart();
-
-    placeOrderWithPhyically() : void {
-        if(this.cart.items.length === 0) {
-            console.log("------------ you have no item in cart yet :) ------------\n");
-            return;
-        }
-
-        // check that the quantity is avaliable for all cart items
-        if(!this.isQuantityAvaliableForCartItems()) {
-            return;
-        }
-
-        let shippingAddress : Address;
-        shippingAddress = this.selectAddress();
-
-        const paymentObject : Payment = new Payment();
-        let paymemtType = paymentTypes.COD;
-
-        let isPaymentDone : boolean = paymentObject.makePayment(paymemtType);
-
-        if(!isPaymentDone) {
-            console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
-            return;
-        }
-
-        this.generateOrder(paymemtType, shippingAddress, paymentObject.paymentMethod);
-
-        const newSales : Sales = new Sales();
-        newSales.storeOrder(this);
-
-        // remove iteam from cart
-        this.cart.items = [];
-        
-        console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
+    if (!isQuantityAvailableForCartItems(this)) {
+      return;
     }
 
-    private isQuantityAvaliableForCartItems() : boolean {
-        let isQuantityAvailable : boolean = true;
-        this.cart.items.forEach((currentIteam) => {
-            // check that the quantity is avaliable
-            if(currentIteam.bookQuantity > currentIteam.book.getQuantity()) {
-                console.log(`For the book ( ${currentIteam.book.getTitle()} ) we have only ${currentIteam.book.getQuantity()} Quantity ...`);
-                isQuantityAvailable = false;
-                return;
-            }
-        })
+    let shippingAddress: Address = this.selectAddress();
 
-        return isQuantityAvailable;
+    //customer selected to pay with credit card
+    let paymentReceipt: PaymentReceipt | string = Payment.verify(
+      new CreditCard(123456789, "Mark", "12/25", 123)
+    );
+
+    if (typeof paymentReceipt == "string") {
+      console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
+      return;
     }
 
-    private generateOrder(paymemtType:string, shippingAddress:Address, paymentMethod:string) : void {
-        let totalPriceOfOrder : number = 0;
-        const products : CartItem[] = [];
+    const order: PhysicalOrder | DigitalOrder = this.createOrder(this,paymentReceipt,"Physical Order",shippingAddress);
 
-        this.cart.items.forEach((currentIteam) => {
-            totalPriceOfOrder = totalPriceOfOrder + currentIteam.totalPrice;
-            products.push(currentIteam);
-            // update the quantity of books
-            currentIteam.book.setQuantity(currentIteam.book.getQuantity() - currentIteam.bookQuantity);
-        })
+    this.orders.push(order);
 
-        const order = new PhysicalOrder(products, totalPriceOfOrder, paymemtType, shippingAddress, paymentMethod);
-        this.orders.push(order);
+    const newSales: Sales = new Sales();
+    newSales.storeOrder(this);
+    this.getCart().empty();
+
+    console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~~~ \n");
+  }
+
+  public placeOrderDigitally(): void {
+    const digitallyNotAvailableItems: CartItem[] | true = getListOfDigitallyNotAvailableBooks(this.cart);
+
+    if (digitallyNotAvailableItems != true) {
+      console.log(`Some items in your cart is currently not available in digital Format: ${digitallyNotAvailableItems}`);
+      return;
     }
 
-    placeOrderWithDigital(indexOfBook:number) : void {
-        const books : Book[] = BookInventory.books;
-        const customerSelectedBook : Book = books[indexOfBook];
+    const paymentReceipt: PaymentReceipt | string = Payment.verify(
+      new Upi("example@gmail.com")
+    );
 
-        if(!customerSelectedBook.getisDigitallyAvailable()) {
-            console.log("~~~~~~~~~~ selected book is not avaliable in Digitally ~~~~~~~~~~");
-            return;
-        }
-
-        const paymentObject : Payment = new Payment();
-        let paymemtType = paymentTypes.Online;
-
-        let isPaymentDone : boolean = paymentObject.makePayment(paymemtType);
-
-        if(!isPaymentDone) {
-            console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
-            return;
-        }
-
-        const order = new DigitalOrder([customerSelectedBook], customerSelectedBook.getPrice(), paymentObject.paymentMethod);
-        console.log("\n~~~~~~~~~~ order place successfully :) ~~~~~~~~~~ \n");
-        this.orders.push(order);
+    if (typeof paymentReceipt == "string") {
+      console.log("~~~~~~~~~~ order not place because payment failed :) ~~~~~~~~~~");
+      return;
     }
 
-    showOrderHistory() : void {
-        let {createLine, centerText} = layoutDesign.designTheOutput();
-        const boxWidth : number = 60; // Width of the box
-        
-        console.log(createLine(boxWidth, "="));
-        console.log(centerText("Order History", boxWidth));
-        
-        if(this.orders.length === 0) {
-            console.log(centerText("you have no orders yet :)", boxWidth));
-            console.log(createLine(boxWidth, "="));
-            console.log("\n");
-            return;
-        }
+    const order: DigitalOrder | PhysicalOrder = this.createOrder(this,paymentReceipt,"Digital Order");
 
-        this.orders.forEach((currentOrder, index) => {
-            console.log(createLine(boxWidth, "-"));
-            console.log(`| Order #${index + 1}`.padEnd(boxWidth - 1) + "|");
-            console.log(createLine(boxWidth, "-"));
+    this.orders.push(order);
+    const newSales: Sales = new Sales();
+    newSales.storeOrder(this);
+    this.getCart().empty();
 
-            // print one by one order details
-            currentOrder.printDetails();
-        })
+    console.log("------------------ Order has been placed successfully! ------------------------");
+  }
 
-        console.log(createLine(boxWidth, "="));
+  public addAddress(newAddress: Address): void {
+    this.addresses.push(newAddress);
+  }
+
+  public showOrderHistory(): void {
+    let { createLine, centerText } = layoutDesign.designTheOutput();
+    const boxWidth: number = 60;
+
+    console.log(createLine(boxWidth, "="));
+    console.log(centerText("Order History", boxWidth));
+
+    if (this.orders.length === 0) {
+      console.log(centerText("you have no orders yet :)", boxWidth));
+      console.log(createLine(boxWidth, "="));
+      console.log("\n");
+      return;
     }
 
-    addAddress(newAddress: Address) : void {
-        this.addresses.push(newAddress);
+    this.orders.forEach((currentOrder, index) => {
+      console.log(createLine(boxWidth, "-"));
+      console.log(`| Order #${index + 1}`.padEnd(boxWidth - 1) + "|");
+      console.log(createLine(boxWidth, "-"));
+
+      // print one by one order details
+      currentOrder.printDetails();
+    });
+
+    console.log(createLine(boxWidth, "="));
+  }
+
+  public showAddresses(): void {
+    let { createLine, centerText } = layoutDesign.designTheOutput();
+    const boxWidth: number = 60; // Width of the box
+
+    console.log(createLine(boxWidth, "-"));
+    console.log(centerText("All Address", boxWidth));
+    console.log(createLine(boxWidth, "-"));
+
+    this.addresses.forEach((currentAddress, index) => {
+      console.log(centerText(`Address #${index + 1}`, boxWidth));
+      currentAddress.printDetails();
+      console.log(createLine(boxWidth, "-"));
+    });
+  }
+
+  public selectAddress(): Address {
+    let { createLine, centerText } = layoutDesign.designTheOutput();
+    const boxWidth: number = 60; // Width of the box
+
+    console.log("\n");
+    console.log(createLine(boxWidth, "="));
+    console.log(
+      centerText(`~~~~~ Select your shipping address :) ~~~~~`, boxWidth)
+    );
+
+    let shippingAddress: Address;
+    let isCustomerAddNewAddress: boolean = true;
+
+    if (this.addresses.length !== 0) {
+      this.showAddresses();
+      console.log(
+        centerText(`~~~~~ You want to add new address ??? ~~~~~`, boxWidth)
+      );
+      isCustomerAddNewAddress = true;
     }
 
-    showAddresses() : void {
-        let {createLine, centerText} = layoutDesign.designTheOutput();
-        const boxWidth : number = 60; // Width of the box
-        
-        console.log(createLine(boxWidth, "-"));
-        console.log(centerText("All Address", boxWidth));
-        console.log(createLine(boxWidth, "-"));
-
-        this.addresses.forEach((currentAddress, index) => {
-            console.log(centerText(`Address #${index + 1}`, boxWidth));
-            currentAddress.printDetails();
-            console.log(createLine(boxWidth, "-"));
-        })
+    if (isCustomerAddNewAddress) {
+      console.log(
+        centerText(`~~~~~ Enter details of new address ~~~~~`, boxWidth)
+      );
+      this.addAddress(new Address("3", "3", 3, "3", "3", typeOfAddress.HOME));
+      shippingAddress = this.addresses[this.addresses.length - 1];
+    } else {
+      shippingAddress = this.addresses[0];
     }
 
-    selectAddress() : Address {
-        // select address
-        let {createLine, centerText} = layoutDesign.designTheOutput();
-        const boxWidth : number = 60; // Width of the box
-        
-        console.log("\n");
-        console.log(createLine(boxWidth, "="));
-        console.log(centerText(`~~~~~ Select your shipping address :) ~~~~~`, boxWidth));
-        
-        let shippingAddress : Address;
-        let isCustomerAddNewAddress : boolean = true;
+    console.log(createLine(boxWidth, "-"));
+    console.log(centerText(`Address selected successfully :)`, boxWidth));
+    console.log(createLine(boxWidth, "-"));
 
-        if(this.addresses.length !== 0) {
-            this.showAddresses();
-            console.log(centerText(`~~~~~ You want to add new address ??? ~~~~~`, boxWidth));
-            isCustomerAddNewAddress = true;
-        }
+    console.log(createLine(boxWidth, "="));
+    console.log("\n");
 
-        if(isCustomerAddNewAddress) {
-            console.log(centerText(`~~~~~ Enter details of new address ~~~~~`, boxWidth));
-            this.addAddress(new Address("3", "3", 3, "3", "3", typeOfAddress.HOME));
-            shippingAddress = this.addresses[this.addresses.length-1];
-        } else {
-            // means customer select address from already added addresses
-            shippingAddress = this.addresses[0];
-        }
+    return shippingAddress;
+  }
 
-        console.log(createLine(boxWidth, "-"));
-        console.log(centerText(`Address selected successfully :)`, boxWidth));
-        console.log(createLine(boxWidth, "-"));
+  private createOrder(
+    customer: Customer,
+    paymentDetail: PaymentReceipt,
+    orderType: string,
+    shippingAddress?: Address
+  ): DigitalOrder | PhysicalOrder {
+    let totalPriceOfOrder: number = 0;
+    let products: CartItem[] = [];
 
-        console.log(createLine(boxWidth, "="));
-        console.log("\n");
+    customer
+      .getCart()
+      .getItems()
+      .forEach((currentItem: CartItem) => {
+        totalPriceOfOrder += currentItem.getTotalPrice();
+        products.push(currentItem);
+      });
 
-        return shippingAddress;
+    if (shippingAddress) {
+      this.quantityDecreaser(customer.getCart());
+      return new PhysicalOrder(
+        products,
+        totalPriceOfOrder,
+        paymentDetail,
+        orderType,
+        shippingAddress
+      );
     }
+
+    return new DigitalOrder(
+      products,
+      totalPriceOfOrder,
+      paymentDetail,
+      orderType
+    );
+  }
+  private quantityDecreaser(cart: Cart) {
+    cart.getItems().forEach((currentCartItem: CartItem) => {
+      currentCartItem
+        .getItem()
+        .setQuantity(
+          currentCartItem.getItem().getQuantity() -
+            currentCartItem.getItemQuantity()
+        );
+    });
+  }
 }

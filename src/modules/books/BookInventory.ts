@@ -5,11 +5,11 @@ export class BookInventory {
 
     public static books : Book[] = [];
 
-    addBook(newBook:Book) : void {
+    public addBook(newBook:Book) : void {
         BookInventory.books.push(newBook);
     }
 
-    removeBook(book: Book) : void {
+    public removeBook(book: Book) : void {
         let isBookNotFound : boolean = true;
 
         BookInventory.books.forEach((currentBook, index) => {
@@ -25,7 +25,7 @@ export class BookInventory {
         }
     }
 
-    showBooks() : void {
+    public showBooks() : void {
         let {createLine, centerText} = layoutDesign.designTheOutput();
         const boxWidth : number = 60; // Width of the box
 
@@ -40,7 +40,7 @@ export class BookInventory {
         console.log(createLine(boxWidth, "="));
     }
 
-    searchBook(searchValue:string) : void {
+    public searchBook(searchValue:string) : void {
         let isBookNotPresent : boolean = false;
 
         console.log("---------------------- Search Results ----------------------");
@@ -61,5 +61,9 @@ export class BookInventory {
         if(!isBookNotPresent) {
             console.log("-------------- Book not found (: --------------\n");
         }
+    }
+
+    public static findItemFromInventory(index: number): Book {
+        return BookInventory.books[index];
     }
 }

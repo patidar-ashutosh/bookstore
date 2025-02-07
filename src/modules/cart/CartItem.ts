@@ -1,17 +1,27 @@
 import { Book } from "../books/Book";
 
 export class CartItem {
-    public book : Book;
-    public bookQuantity : number;
-    public totalPrice : number;
+  private totalPrice: number;
 
-    constructor(selectedBook:Book, bookQuantity:number) {
-        this.book = selectedBook;
-        this.bookQuantity = bookQuantity;
-        this.totalPrice = this.calculateTotal();
-    }
+  constructor(private item: Book, private itemQuantity: number) {
+    this.totalPrice = this.calculateTotal();
+  }
 
-    private calculateTotal() : number {
-        return this.book.getPrice() * this.bookQuantity;
-    }
+  public getItem(): Book {
+    return this.item;
+  }
+
+  public getItemQuantity(): number {
+    return this.itemQuantity;
+  }
+
+  public getTotalPrice():number{
+    return this.totalPrice;
+  }
+
+  private calculateTotal(): number {
+    return this.getItem().getPrice() * this.getItemQuantity();
+  }
 }
+
+

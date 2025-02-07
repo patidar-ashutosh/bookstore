@@ -1,14 +1,14 @@
 import { Book } from "../books/Book";
-import { paymentTypes } from "../enums/paymentTypes";
+import { CartItem } from "../cart/CartItem";
+import { PaymentReceipt } from "../payment/PaymentStructure";
 import { Order } from "./Order";
+
+console.log("hii")
 
 export class DigitalOrder extends Order {
 
-    constructor(product: Book[], totalPriceOfOrder:number, paymentMethod:string) {
-        super(product, totalPriceOfOrder, "digital", paymentTypes.Online, paymentMethod);
+    constructor( products: CartItem[], totalPriceOfOrder:number,  paymentDetail:PaymentReceipt,orderType : string) {
+        super(products, totalPriceOfOrder, paymentDetail,orderType);
     }
-
-    paymentMethods() : void {
-        console.log("select payment methods");
-    }
+    
 }

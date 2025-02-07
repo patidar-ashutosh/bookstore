@@ -3,26 +3,27 @@ import { Customer } from "../customer/Customer";
 
 export class Sales {
 
-    static customers : Customer[] = [];
+    public static customers : Customer[] = [];
 
     private isCustomerPresent(newCustomer:Customer) : boolean {
         let isCustomerAlreadyPresent : boolean = false;
         Sales.customers.forEach((customer) => {
             if(newCustomer.email === customer.email) {
                 isCustomerAlreadyPresent = true;
+                return;
             }
         })
 
         return isCustomerAlreadyPresent;
     }
 
-    storeOrder(newCustomer:Customer) : void {
+    public storeOrder(newCustomer:Customer) : void {
         if(!this.isCustomerPresent(newCustomer)) {
             Sales.customers.push(newCustomer);
         }
     }
 
-    showCustomersInfo() : void {
+    public showCustomersInfo() : void {
         if(Sales.customers.length === 0) {
             console.log("----------------- no record found -----------------\n");
             return;
@@ -47,7 +48,7 @@ export class Sales {
         console.log(createLine(boxWidth, "="));
     }
 
-    showCustomerOrderHistory(customer: Customer) : void {
+    public showCustomerOrderHistory(customer: Customer) : void {
         if(Sales.customers.length === 0) {
             console.log("----------------- customer have no orders -----------------\n");
             return;
